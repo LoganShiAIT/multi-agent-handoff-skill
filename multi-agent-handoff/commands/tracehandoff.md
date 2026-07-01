@@ -1,7 +1,7 @@
 ---
 description: Update the current handoff topic with progress, blockers, and next steps
 argument-hint: "[task-slug or update notes]"
-allowed-tools: Read, Edit, Glob, Grep, Bash, LS
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 ---
 
 Use the `multi-agent-handoff` skill.

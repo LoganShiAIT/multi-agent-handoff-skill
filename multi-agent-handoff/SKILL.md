@@ -408,7 +408,7 @@ Archive to prevent old context from polluting active work.
    - Check for old timestamped files related to the slug that are not referenced by the active handoff.
    - If in a git repository, inspect changed and untracked files so temporary byproducts are not confused with deliverable source changes or expected external workflow artifacts.
    - Confirm no other active handoff depends on this task without a replacement link.
-4. Add an `Archive Plan` near the top and ask the user to confirm before moving or deleting anything:
+4. Add an `Archive Plan` near the top and ask the user to confirm before moving or deleting anything. The plan should present the default archive action as a full move, and ask the user to explicitly say if they want copy-only/no active-file removal instead.
 
 ```markdown
 ## Archive Plan
@@ -423,7 +423,7 @@ Archive to prevent old context from polluting active work.
 ```
 
 5. If the user does not confirm, stop after updating the task handoff and optionally set the index row to `archive-candidate` or `needs-user-confirmation`.
-6. After user confirmation, add or refresh an `Archive Summary` near the top:
+6. After user confirmation for a full archive move, add or refresh an `Archive Summary` near the top. If the user confirms copy-only/no active-file removal, keep it as an archive candidate and add a brief copied-archive note instead of an `Archive Summary`.
 
 ```markdown
 ## Archive Summary
@@ -440,10 +440,10 @@ Archive to prevent old context from polluting active work.
 
 7. Create `HandoffDocs/archive/YYYY-MM/` if missing.
 8. Re-read `HandoffDocs/handoff.md` immediately before editing.
-9. Move or copy the task file to `HandoffDocs/archive/YYYY-MM/<task-slug>.md` as confirmed.
-10. Remove it from `Active` or `Blocked` in `handoff.md` using a local row edit.
-11. Add a short row to `Archived` in `handoff.md`.
-12. If deleting the active `handoffs/<task-slug>.md` was confirmed, delete it only after the archived copy and index update both succeed.
+9. By default, perform a confirmed archive as a move: create `HandoffDocs/archive/YYYY-MM/<task-slug>.md`, update the index, then remove the active `HandoffDocs/handoffs/<task-slug>.md` only after the archived file and index update both succeed.
+10. If the user explicitly confirms copy-only/no active-file removal, copy the task file to `HandoffDocs/archive/YYYY-MM/<task-slug>.md`, keep the active file indexed, and mark the active row as `archive-candidate` or `copied-to-archive` instead of treating the task as fully archived.
+11. For a confirmed move, remove it from `Active` or `Blocked` in `handoff.md` using a local row edit.
+12. For a confirmed move, add a short row to `Archived` in `handoff.md`.
 13. Leave task artifacts in `HandoffDocs/artifacts/<task-slug>/` unless the user explicitly confirmed artifact cleanup. Mark them historical and do not read them by default.
 
 When resuming work, do not read `archive/`, `study/`, or historical `artifacts/` unless the user names an archived slug, asks for learning or historical context, or the active handoff explicitly points to a specific file.

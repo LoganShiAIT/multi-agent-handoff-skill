@@ -27,7 +27,7 @@ Workflow:
    - Create `handoff.md` as the index.
    - Create the first task handoff from the user's request or `$ARGUMENTS`.
    - Determine whether handoffs are private/local or shared/team.
-   - For private/local handoffs in a git repository, prefer adding `HandoffDocs/` to `.git/info/exclude`.
+   - For private/local handoffs in a git repository, ask for and receive explicit user confirmation before changing git metadata; after confirmation, prefer adding `HandoffDocs/` to `.git/info/exclude`.
    - Do not modify `.gitignore` unless the user confirms the ignore rule should be shared by the repo.
 4. If `HandoffDocs/handoff.md` exists:
    - Read it first.
