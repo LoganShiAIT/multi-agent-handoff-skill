@@ -1,0 +1,94 @@
+<svg width="1280" height="520" viewBox="0 0 1280 520" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Multi-Agent Handoff banner</title>
+  <desc id="desc">A product banner showing multiple agent task cards connected to a shared handoff index.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1280" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8F4EA"/>
+      <stop offset="0.55" stop-color="#EEF4F0"/>
+      <stop offset="1" stop-color="#F7EFE5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#162018" flood-opacity="0.18"/>
+    </filter>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse">
+      <path d="M 36 0 L 0 0 0 36" stroke="#1D2822" stroke-opacity="0.06" stroke-width="1"/>
+    </pattern>
+    <style>
+      .label { font: 700 22px Georgia, "Times New Roman", serif; fill: #162018; }
+      .mono { font: 600 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #233027; }
+      .small { font: 500 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #526258; }
+      .tiny { font: 500 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #526258; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="520" rx="34" fill="url(#paper)"/>
+  <rect width="1280" height="520" rx="34" fill="url(#grid)"/>
+
+  <path d="M100 410 C230 333 319 348 430 271 C548 190 667 189 790 257 C925 332 1009 304 1184 201" stroke="#162018" stroke-opacity="0.14" stroke-width="3" stroke-dasharray="8 12"/>
+  <path d="M1022 83 L1198 83 L1198 259" stroke="#E35D35" stroke-width="10" stroke-linecap="square"/>
+  <path d="M83 436 L258 436 L258 260" stroke="#1F8A70" stroke-width="10" stroke-linecap="square"/>
+
+  <g transform="translate(86 72)">
+    <text x="0" y="0" class="tiny">PROJECT-LOCAL COORDINATION</text>
+    <text x="0" y="58" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#162018">Multi-Agent</text>
+    <text x="0" y="116" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#162018">Handoff</text>
+    <text x="4" y="164" class="mono">one index + focused task handoffs</text>
+    <g transform="translate(0 204)">
+      <rect x="0" y="0" width="238" height="54" rx="0" fill="#162018"/>
+      <text x="22" y="34" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="700" fill="#F8F4EA">/handoffprompt api-auth</text>
+    </g>
+    <g transform="translate(0 278)">
+      <rect x="0" y="0" width="148" height="36" rx="0" fill="#1F8A70"/>
+      <text x="18" y="24" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="800" fill="#FFFFFF">traceable</text>
+      <rect x="160" y="0" width="126" height="36" rx="0" fill="#E7B94B"/>
+      <text x="178" y="24" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="800" fill="#162018">resumable</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="444" y="78" width="372" height="362" rx="14" fill="#FFFDF8" stroke="#162018" stroke-width="3"/>
+    <rect x="444" y="78" width="372" height="54" rx="14" fill="#162018"/>
+    <path d="M444 118 H816" stroke="#162018" stroke-width="28"/>
+    <text x="470" y="112" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17" font-weight="800" fill="#F8F4EA">HandoffDocs/handoff.md</text>
+    <text x="470" y="166" class="small">Active</text>
+    <rect x="470" y="183" width="320" height="46" rx="8" fill="#E8F4EF" stroke="#1F8A70" stroke-width="2"/>
+    <circle cx="493" cy="206" r="7" fill="#1F8A70"/>
+    <text x="510" y="211" class="mono">api-auth-investigation</text>
+    <text x="470" y="258" class="small">Blocked</text>
+    <rect x="470" y="275" width="320" height="46" rx="8" fill="#FFF3D4" stroke="#E7B94B" stroke-width="2"/>
+    <circle cx="493" cy="298" r="7" fill="#E7B94B"/>
+    <text x="510" y="303" class="mono">migration-test-failures</text>
+    <text x="470" y="350" class="small">Archived</text>
+    <rect x="470" y="367" width="320" height="38" rx="8" fill="#F4E9DE" stroke="#E35D35" stroke-width="2"/>
+    <circle cx="493" cy="386" r="6" fill="#E35D35"/>
+    <text x="510" y="391" class="mono">old-cache-probe</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="872" y="82" width="300" height="128" rx="14" fill="#FFFDF8" stroke="#162018" stroke-width="3"/>
+    <text x="898" y="121" class="label">Agent A</text>
+    <text x="898" y="151" class="mono">handoffs/api-auth.md</text>
+    <path d="M900 176 H1124" stroke="#1F8A70" stroke-width="8" stroke-linecap="square"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="872" y="238" width="300" height="128" rx="14" fill="#FFFDF8" stroke="#162018" stroke-width="3"/>
+    <text x="898" y="277" class="label">Agent B</text>
+    <text x="898" y="307" class="mono">artifacts/test-results</text>
+    <path d="M900 332 H1090" stroke="#E7B94B" stroke-width="8" stroke-linecap="square"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="328" y="290" width="74" height="74" rx="14" fill="#162018"/>
+    <path d="M348 325 H382 M365 308 V342" stroke="#F8F4EA" stroke-width="8" stroke-linecap="square"/>
+  </g>
+
+  <path d="M816 206 C843 206 843 146 872 146" stroke="#162018" stroke-width="3"/>
+  <path d="M816 298 C844 298 844 302 872 302" stroke="#162018" stroke-width="3"/>
+  <path d="M402 327 C430 327 422 206 444 206" stroke="#162018" stroke-width="3"/>
+
+  <g transform="translate(946 410)">
+    <rect x="0" y="0" width="226" height="44" rx="0" fill="#FFFDF8" stroke="#162018" stroke-width="3"/>
+    <text x="18" y="28" class="mono">confirm before cleanup</text>
+  </g>
+</svg>
