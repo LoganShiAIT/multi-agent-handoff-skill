@@ -97,6 +97,7 @@ Use this checklist instead of duplicating directory rules in commands:
 
 - Initialize root: create `HandoffDocs/`, `HandoffDocs/handoffs/`, `HandoffDocs/archive/`, `HandoffDocs/study/`, and `HandoffDocs/artifacts/`.
 - Initialize task: create `HandoffDocs/handoffs/<task-slug>.md` and `HandoffDocs/artifacts/<task-slug>/{reports,test-scripts,test-results,misc}/`.
+- Initialize OpenSpec state: when creating a new task handoff, include an `OpenSpec Workflow State` section that records the current OpenSpec status, expected spec root, and whether OpenSpec artifacts are needed for this task. Default the spec root to `openspec/` unless the project declares a different location.
 - Archive task: create `HandoffDocs/archive/YYYY-MM/` only after the user confirms the archive action.
 - Create study note: create `HandoffDocs/study/<study-scope>/` before writing the HTML note, unless a user/project-specific personal notes policy overrides the study location.
 - Never assume `HandoffDocs/` is private. Choose private/local or shared/team policy first.
@@ -156,6 +157,14 @@ Never treat `delete-candidate` as permission to delete. A file may be proposed f
 Respect other skills, frameworks, and project workflows that define their own file layout. Their artifacts belong where that workflow says they belong.
 
 Examples include spec systems, architecture docs, formal design docs, permanent tests, generated app code, release notes, migration files, and any skill-specific outputs with an established directory.
+
+OpenSpec convention:
+
+- Treat `openspec/` as the default OpenSpec workflow root.
+- When initializing a new task handoff, add the task's OpenSpec workflow state to the task handoff even if no OpenSpec files have been created yet.
+- Use `Status: not-needed` when the task does not require a spec/change proposal.
+- Use `Status: initialized` when the task may need OpenSpec but the change/spec has not been selected yet.
+- If an OpenSpec change/spec is selected, record it under `Active Change / Spec` and keep OpenSpec-owned files in `openspec/`.
 
 Rules:
 
@@ -240,6 +249,13 @@ Create one file per manually launched agent task:
 - Relevant project facts:
 - Commands already run:
 - Files already inspected:
+
+## OpenSpec Workflow State
+- Status: initialized | not-needed | active | blocked | done
+- Spec Root: openspec/
+- Active Change / Spec:
+- Next OpenSpec Action:
+- Notes:
 
 ## Progress Log
 -

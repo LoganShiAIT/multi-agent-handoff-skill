@@ -82,10 +82,13 @@ HandoffDocs/
 
 - 任务目标、范围和成功标准；
 - 已查看的文件和已经运行过的命令；
+- OpenSpec 工作流状态：默认 `Spec Root` 为 `openspec/`，并记录当前是否 `not-needed`、`initialized`、`active`、`blocked` 或 `done`；
 - 进度日志和关键决策；
 - 相关产物路径；
 - 在受控 artifacts 目录之外创建的额外临时文件；
 - 交还给下一位 Agent 的当前状态、下一步和风险。
+
+如果任务需要 OpenSpec change/spec，handoff 只记录引用和下一步；OpenSpec 自己的文件仍保留在 `openspec/` 工作流目录中，不移动到 `HandoffDocs/`。
 
 ## 命令
 
@@ -93,7 +96,7 @@ HandoffDocs/
 
 | 命令 | 用途 |
 | --- | --- |
-| `/inithandoff` | 快速了解项目，创建或选择 `HandoffDocs/`，并建立当前任务上下文。 |
+| `/inithandoff` | 快速了解项目，创建或选择 `HandoffDocs/`，并建立带 OpenSpec 状态的当前任务上下文。 |
 | `/tracehandoff` | 追加进度、阻塞点、验证结果和下一步。 |
 | `/handoffprompt` | 为另一个 Agent 或新会话生成可直接粘贴的提示词包。 |
 | `/archivehandoff` | 审计任务、分类产物，并准备需要用户确认的归档动作。 |

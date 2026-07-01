@@ -26,6 +26,7 @@ Workflow:
    - Follow the skill's Filesystem Operations Checklist.
    - Create `handoff.md` as the index.
    - Create the first task handoff from the user's request or `$ARGUMENTS`.
+   - Initialize the task handoff with an `OpenSpec Workflow State` section. Use `Spec Root: openspec/` by default, set `Status: not-needed` when the task clearly does not require OpenSpec, and set `Status: initialized` when the task may need a future OpenSpec change/spec.
    - Determine whether handoffs are private/local or shared/team.
    - For private/local handoffs in a git repository, ask for and receive explicit user confirmation before changing git metadata; after confirmation, prefer adding `HandoffDocs/` to `.git/info/exclude`.
    - Do not modify `.gitignore` unless the user confirms the ignore rule should be shared by the repo.
@@ -35,5 +36,6 @@ Workflow:
    - If multiple active tasks exist and no task is clear, list them and ask which to continue or whether to create a new one.
    - Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or historical artifacts unless the user or selected active handoff explicitly points to a specific file.
 5. Before starting implementation work, update the chosen task handoff with the current mission, status, and next step.
+6. Keep OpenSpec-owned files in `openspec/`. Reference selected OpenSpec changes/specs from the task handoff, but do not move those artifacts into `HandoffDocs/`.
 
 End by reporting the selected slug and the immediate focus. Include one next-step hint, such as `/tracehandoff` after changes or `/handoffprompt <slug>` before launching another agent, plus a natural-language alternative.
