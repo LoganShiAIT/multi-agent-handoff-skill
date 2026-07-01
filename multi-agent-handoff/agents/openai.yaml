@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multi-Agent Handoff"
+  short_description: "Manage handoffs for manual multi-agent work"
+  default_prompt: "Use $multi-agent-handoff to manage handoff context for this multi-agent task."
