@@ -26,6 +26,7 @@ Workflow:
    - Follow the skill's Filesystem Operations Checklist.
    - Create `handoff.md` as the index.
    - Create the first task handoff from the user's request or `$ARGUMENTS`.
+   - Add a `Context Panel` to the task handoff that states what this slot discusses, required files to read, optional files to read only if needed, and context not to read by default.
    - Initialize the task handoff with an `OpenSpec Workflow State` section. Use `Spec Root: openspec/` by default, set `Status: not-needed` when the task clearly does not require OpenSpec, and set `Status: initialized` when the task may need a future OpenSpec change/spec.
    - Determine whether handoffs are private/local or shared/team.
    - For private/local handoffs in a git repository, ask for and receive explicit user confirmation before changing git metadata; after confirmation, prefer adding `HandoffDocs/` to `.git/info/exclude`.
@@ -33,9 +34,11 @@ Workflow:
 4. If `HandoffDocs/handoff.md` exists:
    - Read it first.
    - If the user or `$ARGUMENTS` names a task, read that task handoff.
+   - If the user or `$ARGUMENTS` asks for a new task, create a new kebab-case task slug, create `HandoffDocs/handoffs/<task-slug>.md`, create `HandoffDocs/artifacts/<task-slug>/{reports,test-scripts,test-results,misc}/`, add a `Context Panel`, add `OpenSpec Workflow State`, and append one Active index row for the new task.
    - If multiple active tasks exist and no task is clear, list them and ask which to continue or whether to create a new one.
    - Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or historical artifacts unless the user or selected active handoff explicitly points to a specific file.
 5. Before starting implementation work, update the chosen task handoff with the current mission, status, and next step.
-6. Keep OpenSpec-owned files in `openspec/`. Reference selected OpenSpec changes/specs from the task handoff, but do not move those artifacts into `HandoffDocs/`.
+6. Before reading beyond the selected handoff, use its `Context Panel` as the reading boundary. Inspect required files first; inspect optional files only when the current task needs them; do not read excluded context by default.
+7. Keep OpenSpec-owned files in `openspec/`. Reference selected OpenSpec changes/specs from the task handoff, but do not move those artifacts into `HandoffDocs/`.
 
 End by reporting the selected slug and the immediate focus. Include one next-step hint, such as `/tracehandoff` after changes or `/handoffprompt <slug>` before launching another agent, plus a natural-language alternative.

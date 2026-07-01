@@ -9,6 +9,8 @@ description: Use when coordinating manually launched multi-agent work, preservin
 
 Use one index handoff plus many focused task handoffs to coordinate manually launched agents. The index shows what is active, blocked, done, or archived; each small handoff owns the context and progress for one agent task.
 
+Each task handoff also acts as a slot panel: a compact miniature page that says what this slot is about and which files are required for useful context. Agents should read the slot panel before expanding into broader project context, and should not read unrelated handoffs, archives, studies, or old artifacts unless the panel or user explicitly points there.
+
 This template uses `HandoffDocs/handoff.md` plus `HandoffDocs/handoffs/` as the default project-local handoff structure. If adapting it for a specific user or team, replace the default handoff root while keeping the same index-plus-task-files pattern.
 
 For Claude Code, pair this skill with slash commands such as `/inithandoff`, `/tracehandoff`, and `/handoffprompt`. The commands provide explicit moments to initialize, update, and package handoff context instead of relying on a user-level prompt to remember timing.
@@ -58,7 +60,7 @@ Use commands as explicit workflow gates:
 - `/tracehandoff`: Manually update the current topic after work, investigation, agent returns, blockers, or changed next steps.
 - `/handoffprompt`: Generate a strict prompt packet for another manually launched agent or fresh session. It does not launch the agent; it produces the text to paste into that agent/session.
 - `/archivehandoff`: Audit the task and workspace, prepare an archive plan, then close or quarantine a task handoff only after the user confirms file moves or deletion.
-- `/study`: Create a personal HTML learning note from a task case, knowledge point, personal reflection, or summary.
+- `/study`: Create an independent personal HTML learning note from a task case, knowledge point, personal reflection, or summary.
 
 The command files are optional helpers. The skill body remains the source of truth for behavior.
 
@@ -87,7 +89,7 @@ At the end of any handoff-related action, proactively suggest the next useful co
 - `Next: /tracehandoff after the next code change, or just tell me "update the handoff".`
 - `Next: /handoffprompt <slug> if you want to start another agent, or ask me to "make a prompt for the next agent".`
 - `Next: /archivehandoff <slug> when this topic is done, or say "archive this handoff".`
-- `Next: /study <topic> if this taught you something worth keeping, or say "make a study note".`
+- `Next: /study <topic> if you want an independent personal learning note, or say "make a study note".`
 
 Do not nag or list every command. Suggest only the single command that matches the current state.
 
@@ -244,6 +246,12 @@ Create one file per manually launched agent task:
 - Out of Scope:
 - Success Criteria:
 
+## Context Panel
+- Slot discusses:
+- Required files to read:
+- Optional files to read only if needed:
+- Do not read by default:
+
 ## Context Packet
 - User request:
 - Relevant project facts:
@@ -270,7 +278,7 @@ Create one file per manually launched agent task:
 - Other byproducts:
 
 ## Study Notes
-Personal learning notes generated from this task.
+Optional personal learning references only. Study notes are independent and do not affect task status, index rows, archive state, or the operational handoff flow.
 
 | Path | Topic | Key Lesson | Created |
 | --- | --- | --- | --- |
@@ -289,6 +297,15 @@ Track every non-source or temporary file created outside `HandoffDocs/artifacts/
 ```
 
 Keep task handoffs factual and incremental. Write enough for another agent to continue without replaying the whole conversation, but avoid dumping raw logs unless the log is the artifact.
+
+The `Context Panel` is the handoff's first reading boundary. Keep it short and operational:
+
+- `Slot discusses` states the concrete topic or decision area owned by this handoff.
+- `Required files to read` lists only the files a continuing agent must inspect before acting.
+- `Optional files to read only if needed` lists narrow expansion paths, such as a command doc, spec file, or linked report.
+- `Do not read by default` names context that would usually pollute the task, such as `archive/`, `study/`, unrelated handoffs, old artifacts, or broad source folders.
+
+Update the panel whenever the task scope or required file set changes. Do not use it as a dumping ground for every file touched; it is a context budget for the next reader.
 
 ## Artifact Placement And Extra File Indexing
 
@@ -347,9 +364,9 @@ At the end of a handoff, review `Extra File Index` before archiving. Before user
 
 ## Study Notes
 
-Use `/study` to turn an actual task, knowledge point, personal reflection, or short summary into a personal learning note. These notes are for the learner, not for team-facing postmortems. Prefer reflective, practical writing over status reporting.
+Use `/study` to turn an actual task, knowledge point, personal reflection, or short summary into an independent personal learning note. These notes are for the learner, not for team-facing postmortems. Prefer reflective, practical writing over status reporting.
 
-Study notes are personal learning material, not task authority. Do not load `HandoffDocs/study/` during normal task work. Read a study note only when the user asks for learning material, when running `/study`, or when the active handoff explicitly references a specific note as relevant context.
+Study notes are personal learning material, not task authority. They do not update or control task status, index rows, archive decisions, or handoff routing. Do not load `HandoffDocs/study/` during normal task work. Read a study note only when the user asks for learning material, when running `/study`, or when the active handoff explicitly references a specific note as relevant context.
 
 Do not force a rigid section template. Choose the shape that best fits the case and the learner's intent. The note may be a debugging case study, architecture reading guide, build-process reflection, proposal review, technology crash course, operational playbook, or "what I learned from this incident" essay.
 
@@ -359,9 +376,9 @@ Create study notes as timestamped HTML files:
 HandoffDocs/study/<study-scope>/YYYYMMDD-HHMMSS-short-title.html
 ```
 
-Use the task slug as `<study-scope>` when the note is tied to a handoff task. Use a kebab-case topic slug such as `typescript-generics`, `code-review-habits`, or `internship-reflection` when it is a standalone knowledge point or personal reflection.
+Use the task slug as `<study-scope>` only when the user explicitly wants the learning note scoped by a task. Use a kebab-case topic slug such as `typescript-generics`, `code-review-habits`, or `internship-reflection` when it is a standalone knowledge point or personal reflection.
 
-If project or user instructions define a personal notes root, standalone knowledge or reflection notes should use that root instead of `HandoffDocs/study/`. Keep task-linked notes in `HandoffDocs/study/<task-slug>/` when they are part of the handoff evidence trail.
+If project or user instructions define a personal notes root, standalone knowledge or reflection notes should use that root instead of `HandoffDocs/study/`. Keep task-scoped personal notes in `HandoffDocs/study/<task-slug>/` when the user asks for that scope, but do not treat them as handoff evidence or workflow state.
 
 A study note can be one of these modes:
 
@@ -382,7 +399,7 @@ It should usually include some of these ingredients, but not necessarily in this
 
 Choose concrete headings that match the note, such as `Problem Context`, `Key Concept`, `Repository Structure`, `Debugging Trace`, `Decision Review`, `Future Debugging Method`, `Regression Checklist`, `Method Notes`, `What I Finally Understood`, `Open Questions`, or `Internship Takeaways`.
 
-After creating a task-linked study note, add it to the task handoff's `Study Notes` table. For standalone knowledge or reflection notes, do not force a handoff link; keep the note under the relevant `study/<study-scope>/` folder. If the note references old artifacts, apply Timestamp Trust Rules and label stale or unverified material clearly inside the note.
+After creating a study note, report the path and the key lesson. Do not update task handoffs, index rows, archive records, or workflow state unless the user explicitly asks to add a reference. If the note references old artifacts, apply Timestamp Trust Rules and label stale or unverified material clearly inside the note.
 
 ## Coordinator Workflow
 
@@ -392,15 +409,16 @@ When starting a multi-agent effort:
 2. Create `handoff.md` if missing.
 3. Split the work into independent task slugs.
 4. Create one `handoffs/<task-slug>.md` per manual agent.
-5. Put only the summary row in `handoff.md`.
-6. Give each agent its own task handoff path and tell it to update that task handoff plus its own index row through the Index Update Protocol.
+5. Give every task handoff a `Context Panel` that says what the slot discusses and which files are required before reading more broadly.
+6. Put only the summary row in `handoff.md`.
+7. Give each agent its own task handoff path and tell it to update that task handoff plus its own index row through the Index Update Protocol.
 
 When resuming:
 
 1. Read `handoff.md` first.
 2. If the user names a slug or task, read that task handoff.
 3. If the user does not identify a task and multiple active tasks exist, ask which task to resume or whether to create a new task.
-4. Use the task handoff as the continuity context, especially `Mission`, `Progress Log`, and `Handoff Back`.
+4. Use the task handoff as the continuity context, especially `Context Panel`, `Mission`, `Progress Log`, and `Handoff Back`.
 5. Do not read `archive/`, `study/`, or historical `artifacts/` during resume unless specifically directed by the active handoff or user.
 
 When an agent returns:
@@ -472,6 +490,7 @@ When manually launching an agent, `/handoffprompt` or the coordinator should pro
 You are working on `<task-slug>`.
 
 Read `HandoffDocs/handoffs/<task-slug>.md` before starting.
+Use its `Context Panel` to identify what this slot discusses, which files are required, and which broader context should not be read by default.
 Keep your scope to the Mission section.
 Append concise progress to Progress Log.
 Update Handoff Back before returning.
@@ -491,6 +510,8 @@ Return:
 Update the task handoff before real work begins once the user's requirement is clear. This captures the mission before context drifts.
 
 Update the task handoff after meaningful project edits, investigations, failed attempts, or blocker discoveries. Prefer short append-only entries over rewriting history.
+
+Update the `Context Panel` whenever the task's topic, required files, optional context, or default reading exclusions change. A stale panel is a context leak because the next agent may either miss required files or read too much unrelated history.
 
 Update the index when status, owner, scope, blocker, or next action changes. Avoid index churn for tiny progress updates.
 

@@ -51,4 +51,4 @@ Workflow:
 
 Never treat `delete-candidate` as permission to delete. Never delete archived task handoffs, active task handoffs, artifacts, or scattered workspace files unless the user explicitly confirms that deletion.
 
-End with one next-step hint. Suggest `/study <topic>` if there is a personal learning to preserve, or natural language such as "make a study note from this task".
+End with one next-step hint for the archive workflow, such as `/archivehandoff <task-slug>` only if confirmation is still needed, or no extra command if the archive is complete. Mention `/study <topic>` only when the user explicitly asks for a separate personal learning note; study is independent and does not affect archive state.

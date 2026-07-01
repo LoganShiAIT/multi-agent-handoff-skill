@@ -18,6 +18,7 @@ Workflow:
 5. Append a concise progress entry:
    - What changed or was learned
    - Files touched or inspected
+   - Any `Context Panel` update needed because the slot topic, required files, optional files, or default reading exclusions changed
    - Verification run or skipped
    - Timestamped artifact paths under `HandoffDocs/artifacts/<task-slug>/`, if any
    - Extra files created outside `HandoffDocs/artifacts/<task-slug>/`, if any
@@ -42,6 +43,8 @@ If any temporary document, script, test output, report, screenshot, fixture, dum
 Prefer creating handoff-owned process artifacts directly under `HandoffDocs/artifacts/<task-slug>/`. If a file already exists elsewhere, mark it as `move-candidate` before user confirmation. If a file should become part of the real project or belongs to another workflow's declared layout, mark it as `promote-candidate`, `keep`, or `external-owned` and explain why. Do not move, delete, or relocate files without explicit user confirmation.
 
 When a timestamped file is more than 24 hours old, older than the most recent relevant source/config change, or not referenced by the active handoff, do not trust it automatically. Report its age and verify it against the active handoff, current source files, or a fresh command before relying on it. If it is not referenced by the active handoff, treat it as a possible orphan and add it to `Extra File Index` as `needs verification`, `ignored as stale`, or `confirmed orphan`.
+
+Keep the `Context Panel` short. It should summarize the slot and file-reading boundaries, not duplicate the full progress log or every file ever touched.
 
 Do not rewrite the whole handoff unless it is clearly stale or malformed.
 

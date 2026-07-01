@@ -16,7 +16,7 @@ Workflow:
 4. Output a compact prompt packet with:
    - Task slug and handoff path
    - Mission and success criteria
-   - Relevant context
+   - Context Panel: what the slot discusses, required files, optional files, and default reading exclusions
    - Scope boundaries
    - Required update behavior
    - Return format
@@ -27,6 +27,11 @@ Prompt packet template:
 You are working on `<task-slug>`.
 
 First read `HandoffDocs/handoffs/<task-slug>.md`.
+Use its `Context Panel` as the slot's miniature page:
+- Confirm what this slot discusses.
+- Read the required files listed there before acting.
+- Read optional files only when needed for this task.
+- Do not read excluded context by default.
 
 Mission:
 - <copy or summarize mission>
@@ -41,6 +46,7 @@ Scope:
 
 Before returning:
 - Append concise progress to `HandoffDocs/handoffs/<task-slug>.md`.
+- Update the `Context Panel` if the slot topic, required files, optional context, or default reading exclusions changed.
 - Save generated reports, test scripts, test results, and temporary notes under timestamped paths in `HandoffDocs/artifacts/<task-slug>/`.
 - Index any extra temporary files created outside `HandoffDocs/artifacts/<task-slug>/` in the handoff's `Extra File Index`.
 - Index old relevant artifacts that are not referenced by the active handoff as possible stale/orphan files.

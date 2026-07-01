@@ -6,26 +6,28 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
-Create a personal learning note, not a team-facing report. The note can be based on a real task, a knowledge point, a personal reflection, or a broader summary. The goal is to capture learning about engineering practice, design, debugging, review, operations, architecture, collaboration, or personal growth.
+Create an independent personal learning note, not a team-facing report or task-status artifact. The note can be based on a real task, a knowledge point, a personal reflection, or a broader summary. The goal is to capture learning about engineering practice, design, debugging, review, operations, architecture, collaboration, or personal growth.
+
+Study notes do not affect the Active, Blocked, Done, or Archived boards. They should not update task handoffs, index rows, archive records, or other workflow state unless the user explicitly asks to add a reference.
 
 Do not force a fixed outline. Match the shape of the note to the case. It can read like a debugging case study, architecture reading guide, build-process reflection, proposal review, technology crash course, operational playbook, or personal "what I learned" essay.
 
 Workflow:
 
 1. Determine the study mode:
-   - Task case: `$ARGUMENTS` names an active handoff task.
+   - Task case: `$ARGUMENTS` names a handoff task or task-like case, used only as learning source material.
    - Knowledge point: `$ARGUMENTS` names a concept, tool, API, pattern, or practice.
    - Personal reflection: `$ARGUMENTS` asks for感悟, 反思, 总结, or personal understanding.
    - Summary: `$ARGUMENTS` asks to consolidate several learnings.
-2. If it is task-linked, read `HandoffDocs/handoff.md` and `HandoffDocs/handoffs/<task-slug>.md`. If ambiguous, list active tasks and ask.
+2. If it is task-scoped, read `HandoffDocs/handoff.md` and the explicitly named active task handoff. If the task is not active, use the user's summary unless the user explicitly asks to read a done or archived handoff.
 3. If it is standalone, use a kebab-case topic slug as `<study-scope>` and do not require a handoff file.
 4. Inspect only the files needed to understand the learning. Do not read `archive/`, existing `study/` notes, or old artifacts unless the active handoff explicitly references them or the user asks for historical/learning material.
 5. Treat old timestamped artifacts as potentially stale or orphaned. If used, label them as verified or unverified in the note.
 6. Choose the output root:
-   - Task-linked notes: `HandoffDocs/study/<task-slug>/`.
+   - Task-scoped personal notes: `HandoffDocs/study/<task-slug>/`.
    - Standalone notes: use the project/user personal notes root if one is defined; otherwise use `HandoffDocs/study/<study-scope>/`.
 7. Create `YYYYMMDD-HHMMSS-short-title.html` in the chosen output folder.
-8. If task-linked, add the note path to the task handoff's `Study Notes` table. If standalone, just report the note path.
+8. Report the note path and key lesson. Do not update task handoffs or index rows unless the user explicitly asks to add a reference.
 
 HTML note requirements:
 
@@ -64,4 +66,4 @@ Possible section patterns. Pick what fits; do not include all by default:
 </section>
 ```
 
-End by reporting the created HTML path and the one most important lesson. Suggest `/tracehandoff <task-slug>` only if the note was task-linked and the handoff should record the learning; otherwise do not suggest extra commands.
+End by reporting the created HTML path and the one most important lesson. Do not suggest trace, archive, or handoff updates from `/study` by default; study is an independent personal learning workflow.
