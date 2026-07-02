@@ -1,27 +1,31 @@
 ---
-description: Generate a prompt packet for a manually launched agent or fresh session
-argument-hint: "<task-slug>"
+description: Generate a transfer prompt packet from a light or full handoff
+argument-hint: "[--light | --full] <task-slug>"
 allowed-tools: Read, Glob, Grep, LS
 ---
 
 Use the `multi-agent-handoff` skill.
 
-Generate a prompt packet for another manually launched agent or fresh session. This command does not launch an agent. It reads the task handoff and outputs text the user can paste into Claude Code, Codex, or another agent session.
+Generate a prompt packet for another manually launched agent or fresh session. This command does not launch an agent. It reads a light or full task handoff and outputs text the user can paste into Claude Code, Codex, or another agent session.
 
 Workflow:
 
-1. Read `HandoffDocs/handoff.md`.
-2. Resolve `$ARGUMENTS` to a task slug. If missing or ambiguous, list active tasks and ask which slug to package.
-3. Read `HandoffDocs/handoffs/<task-slug>.md`.
+1. Resolve `$ARGUMENTS` to mode and task slug:
+   - Prefer explicit `--light` or `--full`.
+   - If `HandoffDocs/light/<task-slug>.md` exists and no full handoff is named, use light.
+   - If `HandoffDocs/handoffs/<task-slug>.md` or `HandoffDocs/handoff.md` points to the slug, use full.
+   - If missing or ambiguous, list matching light and full tasks and ask which slug to package.
+2. For light, read `HandoffDocs/light/<task-slug>.md`.
+3. For full, read `HandoffDocs/handoff.md` and `HandoffDocs/handoffs/<task-slug>.md`.
 4. Output a compact prompt packet with:
    - Task slug and handoff path
    - Mission and success criteria
    - Relevant context
-- Scope boundaries
-- Required update behavior
-- Return format
+   - Scope boundaries
+   - Required update behavior
+   - Return format
 
-Prompt packet template:
+Full prompt packet template:
 
 ```markdown
 You are working on `<task-slug>`.
@@ -53,6 +57,33 @@ Return:
 - Files touched
 - Verification run
 - Remaining blockers
+```
+
+Light prompt packet template:
+
+```markdown
+You are working from light handoff `<task-slug>`.
+
+First read `HandoffDocs/light/<task-slug>.md`.
+
+Mission:
+- <copy or summarize intent and goal>
+
+Scope:
+- Keep the work within the light handoff's scope.
+- Update only `HandoffDocs/light/<task-slug>.md` before returning.
+- Do not create full handoff index, artifacts, archive, study notes, or cleanup records unless the user explicitly asks.
+- If the work becomes multi-agent, cross-session, artifact-heavy, blocked, or needs archival, recommend creating a full handoff instead of silently expanding the light file.
+
+Before returning:
+- Append concise progress to the light handoff.
+- Refresh the Next section with current next step, verification, and risks.
+
+Return:
+- What you changed or found
+- Files touched
+- Verification run
+- Whether full handoff tracking is now recommended
 ```
 
 End by suggesting `/tracehandoff <task-slug>` for when that agent returns, or the natural-language alternative "update this handoff with the agent result".

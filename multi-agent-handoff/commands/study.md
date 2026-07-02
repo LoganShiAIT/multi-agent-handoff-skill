@@ -6,18 +6,20 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
-Create a personal learning note, not a team-facing report. The note can be based on a real task, a knowledge point, a personal reflection, or a broader summary. The goal is to capture learning about engineering practice, design, debugging, review, operations, architecture, collaboration, or personal growth.
+Create a personal learning note, not a team-facing report. The note can be based on a full handoff task, a knowledge point, a personal reflection, or a broader summary. The goal is to capture learning about engineering practice, design, debugging, review, operations, architecture, collaboration, or personal growth.
+
+Task-linked study notes attach only to full handoffs. If the topic is a light handoff, create a standalone note only when the user explicitly asks; otherwise suggest keeping the learning in the light handoff's `Next` section or creating a full handoff first.
 
 Do not force a fixed outline. Match the shape of the note to the case. It can read like a debugging case study, architecture reading guide, build-process reflection, proposal review, technology crash course, operational playbook, or personal "what I learned" essay.
 
 Workflow:
 
 1. Determine the study mode:
-   - Task case: `$ARGUMENTS` names an active handoff task.
+   - Task case: `$ARGUMENTS` names an active full handoff task.
    - Knowledge point: `$ARGUMENTS` names a concept, tool, API, pattern, or practice.
    - Personal reflection: `$ARGUMENTS` asks for感悟, 反思, 总结, or personal understanding.
    - Summary: `$ARGUMENTS` asks to consolidate several learnings.
-2. If it is task-linked, read `HandoffDocs/handoff.md` and `HandoffDocs/handoffs/<task-slug>.md`. If ambiguous, list active tasks and ask.
+2. If it is task-linked, read `HandoffDocs/handoff.md` and `HandoffDocs/handoffs/<task-slug>.md`. If ambiguous, list active full tasks and ask. Do not attach study notes to `HandoffDocs/light/`.
 3. If it is standalone, use a kebab-case topic slug as `<study-scope>` and do not require a handoff file.
 4. Inspect only the files needed to understand the learning. Do not read `archive/`, existing `study/` notes, or old artifacts unless the active handoff explicitly references them or the user asks for historical/learning material.
 5. Treat old timestamped artifacts as potentially stale or orphaned. If used, label them as verified or unverified in the note.

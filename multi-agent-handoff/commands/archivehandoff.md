@@ -6,11 +6,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
-Audit the task and workspace, then prepare an archive plan for one task handoff. This command is for tasks that are done, superseded, abandoned, stale, or failed experiments. It must not move, copy, delete, or relocate files until the user explicitly confirms those actions.
+Audit the task and workspace, then prepare an archive plan for one full task handoff. This command is for full handoff tasks that are done, superseded, abandoned, stale, or failed experiments. It must not move, copy, delete, or relocate files until the user explicitly confirms those actions.
+
+This command applies only to full handoffs under `HandoffDocs/handoffs/`. If `$ARGUMENTS` names a light handoff under `HandoffDocs/light/`, stop and suggest either leaving the light note as-is, deleting it only with explicit user confirmation, or creating a full handoff first if archival governance is needed.
 
 Workflow:
 
-1. Read `HandoffDocs/handoff.md`.
+1. Read `HandoffDocs/handoff.md`. If it does not exist and only light handoffs exist, stop; there is no full index to archive from.
 2. Resolve `$ARGUMENTS` to a task slug and archive reason. If missing or ambiguous, ask before moving anything.
 3. Read `HandoffDocs/handoffs/<task-slug>.md`.
 4. Run a pre-archive audit. Do not move, copy, delete, or relocate files during the audit:

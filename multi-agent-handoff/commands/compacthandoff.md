@@ -6,9 +6,9 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
-Compact oversized active handoff context without closing the task. This command creates a historical report artifact first, then rewrites the active handoff or index into a shorter current-context form with links back to the report.
+Compact oversized active full handoff context without closing the task. This command creates a historical report artifact first, then rewrites the active full handoff or index into a shorter current-context form with links back to the report.
 
-This is not an archive command. Do not move, delete, archive, relocate, stage, commit, push, or modify git metadata.
+This command applies only to full handoffs. Light handoffs are intentionally too small for compaction; if a light handoff is too long, recommend creating a full handoff after user confirmation. This is not an archive command. Do not move, delete, archive, relocate, stage, commit, push, or modify git metadata.
 
 Modes:
 
@@ -18,11 +18,12 @@ Modes:
 
 Workflow:
 
-1. Read `HandoffDocs/handoff.md`.
+1. Read `HandoffDocs/handoff.md`. If it does not exist and only light handoffs exist, stop and recommend full handoff creation instead of compacting.
 2. Resolve `$ARGUMENTS`:
    - If `$ARGUMENTS` is `--index`, operate only on the index.
    - If `$ARGUMENTS` is `--all`, inspect the index and active task handoffs for length budgets.
-   - If `$ARGUMENTS` names a slug, read `HandoffDocs/handoffs/<task-slug>.md`.
+   - If `$ARGUMENTS` names a light slug under `HandoffDocs/light/`, stop and recommend full handoff creation.
+   - If `$ARGUMENTS` names a full slug, read `HandoffDocs/handoffs/<task-slug>.md`.
    - If the slug is missing or ambiguous, list active tasks and ask which one to compact.
 3. Use these target budgets:
    - `HandoffDocs/handoff.md`: 120 lines.

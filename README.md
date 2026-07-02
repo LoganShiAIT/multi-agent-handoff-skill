@@ -42,26 +42,84 @@
 
 ## 安装
 
-克隆仓库，然后把 skill 文件夹链接或复制到你使用的 Agent 环境中：
+克隆仓库，然后运行安装脚本。默认安装到用户级 Codex skills 目录，采用复制模式，适合普通使用和 Windows 环境：
+
+```powershell
+git clone https://github.com/LoganShiAIT/multi-agent-handoff-skill.git
+cd multi-agent-handoff-skill
+
+.\scripts\install.ps1
+```
+
+macOS 或 Linux：
 
 ```bash
 git clone https://github.com/LoganShiAIT/multi-agent-handoff-skill.git
 cd multi-agent-handoff-skill
 
-mkdir -p ~/.codex/skills ~/.agents/skills ~/.claude/skills
-ln -s "$PWD/multi-agent-handoff" ~/.codex/skills/multi-agent-handoff
-ln -s "$PWD/multi-agent-handoff" ~/.agents/skills/multi-agent-handoff
-ln -s "$PWD/multi-agent-handoff" ~/.claude/skills/multi-agent-handoff
+bash scripts/install.sh
 ```
 
-Claude Code 可以直接使用 `multi-agent-handoff/commands/` 下的 slash command 辅助文件。对于不能自动加载 skill 的工具，可以让 Agent 手动读取 [`multi-agent-handoff/SKILL.md`](multi-agent-handoff/SKILL.md)。
+开发时如果希望安装目录跟随仓库实时变化，可以使用 link 模式：
+
+```powershell
+.\scripts\install.ps1 -Mode link
+```
+
+```bash
+bash scripts/install.sh --mode link
+```
+
+Claude Code 的 slash command 需要同步到 Claude command 目录。项目级命令通常放在目标项目的 `.claude/commands/`，请把参数指向那个目录：
+
+```powershell
+.\scripts\install.ps1 -ClaudeCommandsDir C:\path\to\your-project\.claude\commands
+```
+
+```bash
+bash scripts/install.sh --claude-commands-dir ../your-project/.claude/commands
+```
+
+对于不能自动加载 skill 的工具，可以让 Agent 手动读取 [`multi-agent-handoff/SKILL.md`](multi-agent-handoff/SKILL.md)。
+
+## 验证
+
+仓库提供零依赖校验脚本，用来检查 skill frontmatter、命令引用、`Filesystem Operations Checklist` 和示例结构：
+
+```powershell
+.\scripts\validate-skill.ps1
+```
+
+```bash
+bash scripts/validate-skill.sh
+```
 
 ## 工作流
 
-进入项目后，先初始化或选择一个任务 handoff。默认的项目内 handoff 根目录是 `HandoffDocs/`：
+进入项目后，先用 `/explorehandoff` 只读探索任务形态。探索阶段不创建 `HandoffDocs/`，也不修改项目文件；它只判断本次工作是否需要 handoff，以及应该使用 light 还是 full。
+
+```text
+/explorehandoff
+   |
+   |-- none  -> 直接回答或继续探索，不建 handoff
+   |-- light -> /inithandoff --light <slug>
+   `-- full  -> 用户确认后 /inithandoff --full <slug>
+```
+
+正式 handoff 分两种：
+
+| 模式 | 适用场景 | 产物 |
+| --- | --- | --- |
+| Light | 小问题、单任务续接、一次交接即可继续 | `HandoffDocs/light/<task-slug>.md` |
+| Full | 多 Agent、跨会话、artifacts、阻塞、归档、压缩或项目级协调 | `HandoffDocs/handoff.md` + `handoffs/` + `artifacts/` |
+
+Light 是单文件便签，不维护总 index，不扫描历史 artifacts，不执行 archive/study/compact。Full 才启用完整项目级治理。默认的项目内 handoff 根目录是 `HandoffDocs/`：
 
 ```text
 HandoffDocs/
+|-- light/
+|   |-- api-auth-investigation.md
+|   `-- ...
 |-- handoff.md
 |-- handoffs/
 |   |-- api-auth-investigation.md
@@ -76,9 +134,9 @@ HandoffDocs/
         `-- misc/
 ```
 
-`handoff.md` 是项目仪表盘，只存放 active、blocked、done、archived 等任务行。详细上下文放在 `handoffs/<task-slug>.md`。
+`handoff.md` 是 full 模式的项目仪表盘，只存放 active、blocked、done、archived 等任务行。详细上下文放在 `handoffs/<task-slug>.md`。
 
-每个任务 handoff 记录：
+每个 full 任务 handoff 记录：
 
 - 任务目标、范围和成功标准；
 - 已查看的文件和已经运行过的命令；
@@ -90,24 +148,27 @@ HandoffDocs/
 
 当活跃 handoff 变得过长时，可以用 `/compacthandoff` 先生成一份历史明细 report，再把当前 handoff 精简成仍然可继续工作的上下文。这样历史修改细节不会丢失，但默认启动新 Agent 时也不会被旧日志拖慢。
 
+可以先看 [`examples/explore-output.md`](examples/explore-output.md) 理解探索输出，看 [`examples/light-handoff/`](examples/light-handoff/) 理解 light 便签，看 [`examples/basic-handoff/`](examples/basic-handoff/) 理解 full 索引和活跃任务文件，再看 [`examples/compact-history/`](examples/compact-history/)、[`examples/light-handoffprompt-output.md`](examples/light-handoffprompt-output.md) 与 [`examples/handoffprompt-output.md`](examples/handoffprompt-output.md) 理解压缩历史和交接提示词的形态。
+
 ## 命令
 
 内置命令是工作流关口。它们不替代判断，只是把关键时刻显式化。
 
 | 命令 | 用途 |
 | --- | --- |
-| `/inithandoff` | 快速了解项目，创建或选择 `HandoffDocs/`，并建立当前任务上下文。 |
-| `/tracehandoff` | 追加进度、阻塞点、验证结果和下一步。 |
-| `/compacthandoff` | 为过长的活跃 handoff 生成历史留档 report，并把当前上下文压缩到可继续工作的长度。 |
-| `/handoffprompt` | 为另一个 Agent 或新会话生成可直接粘贴的提示词包。 |
-| `/archivehandoff` | 审计任务、分类产物，并准备需要用户确认的归档动作。 |
-| `/study` | 把任务案例、知识点或个人反思整理成 HTML 学习笔记。 |
+| `/explorehandoff` | 只读探索任务形态，推荐 none、light 或 full，不写 handoff 文件。 |
+| `/inithandoff` | 在探索后创建或选择 light/full handoff；无参数默认 light，full 需要明确意图或确认。 |
+| `/tracehandoff` | 追加 light 或 full 的进度、验证结果和下一步。 |
+| `/compacthandoff` | 仅用于 full，为过长活跃 handoff 生成历史留档 report 并压缩当前上下文。 |
+| `/handoffprompt` | 从 light 或 full 生成给另一个 Agent 或新会话的提示词包。 |
+| `/archivehandoff` | 仅用于 full，审计任务、分类产物，并准备需要用户确认的归档动作。 |
+| `/study` | 生成个人学习笔记；任务绑定只面向 full handoff。 |
 
 ## 并行冲突控制
 
 并行 Agent 只有在上下文不互相踩踏时才有价值。
 
-`multi-agent-handoff` 的所有权规则很简单：
+Full handoff 的所有权规则很简单：
 
 - 一个 Agent 级任务对应一个 task slug；
 - 一个任务对应一个 handoff 文件；
@@ -140,17 +201,30 @@ HandoffDocs/
 |-- .gitattributes
 |-- assets/
 |   `-- hero.svg
-`-- multi-agent-handoff/
-    |-- SKILL.md
-    |-- agents/
-    |   `-- openai.yaml
-    `-- commands/
-        |-- archivehandoff.md
-        |-- compacthandoff.md
-        |-- handoffprompt.md
-        |-- inithandoff.md
-        |-- study.md
-        `-- tracehandoff.md
+|-- examples/
+|   |-- basic-handoff/
+|   |-- compact-history/
+|   |-- explore-output.md
+|   |-- light-handoff/
+|   |-- light-handoffprompt-output.md
+|   `-- handoffprompt-output.md
+|-- multi-agent-handoff/
+|   |-- SKILL.md
+|   |-- agents/
+|   |   `-- openai.yaml
+|   `-- commands/
+|       |-- archivehandoff.md
+|       |-- compacthandoff.md
+|       |-- explorehandoff.md
+|       |-- handoffprompt.md
+|       |-- inithandoff.md
+|       |-- study.md
+|       `-- tracehandoff.md
+`-- scripts/
+    |-- install.ps1
+    |-- install.sh
+    |-- validate-skill.ps1
+    `-- validate-skill.sh
 ```
 
 ## 设计原则
