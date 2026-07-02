@@ -1,4 +1,4 @@
 interface:
   display_name: "Multi-Agent Handoff"
-  short_description: "Manage handoffs for manual multi-agent work"
-  default_prompt: "Use $multi-agent-handoff to manage handoff context for this multi-agent task."
+  short_description: "Preserve, update, and transfer multi-agent handoff context"
+  default_prompt: "Use $multi-agent-handoff to preserve continuity, update progress, or prepare a prompt for the next agent/session."
