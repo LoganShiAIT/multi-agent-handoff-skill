@@ -84,8 +84,11 @@ HandoffDocs/
 - 已查看的文件和已经运行过的命令；
 - 进度日志和关键决策；
 - 相关产物路径；
+- 压缩过的历史明细留档，以及当前 handoff 指向这些留档的索引；
 - 在受控 artifacts 目录之外创建的额外临时文件；
 - 交还给下一位 Agent 的当前状态、下一步和风险。
+
+当活跃 handoff 变得过长时，可以用 `/compacthandoff` 先生成一份历史明细 report，再把当前 handoff 精简成仍然可继续工作的上下文。这样历史修改细节不会丢失，但默认启动新 Agent 时也不会被旧日志拖慢。
 
 ## 命令
 
@@ -95,6 +98,7 @@ HandoffDocs/
 | --- | --- |
 | `/inithandoff` | 快速了解项目，创建或选择 `HandoffDocs/`，并建立当前任务上下文。 |
 | `/tracehandoff` | 追加进度、阻塞点、验证结果和下一步。 |
+| `/compacthandoff` | 为过长的活跃 handoff 生成历史留档 report，并把当前上下文压缩到可继续工作的长度。 |
 | `/handoffprompt` | 为另一个 Agent 或新会话生成可直接粘贴的提示词包。 |
 | `/archivehandoff` | 审计任务、分类产物，并准备需要用户确认的归档动作。 |
 | `/study` | 把任务案例、知识点或个人反思整理成 HTML 学习笔记。 |
@@ -109,6 +113,7 @@ HandoffDocs/
 - 一个任务对应一个 handoff 文件；
 - 一个任务只占用索引里的一行；
 - 对共享索引只做最小局部编辑；
+- 过长的活跃上下文先留档再压缩，留档 report 由 handoff 内的历史索引指向；
 - 不读取 `archive/`、`study/` 或历史 artifacts，除非当前 handoff 或用户明确指向某个文件。
 
 如果两个 Agent 需要处理同一批文件或同一块领域，要么合并为一个任务 owner，要么把依赖关系写进双方的任务 handoff。
@@ -118,6 +123,7 @@ HandoffDocs/
 这个 skill 对文件操作保持保守：
 
 - 正常工作中可以创建和更新 handoff 文件；
+- 压缩上下文前必须先创建历史留档 report，失败则不改写原 handoff；
 - 把任务移动到 `archive/` 前必须获得确认；
 - 移动、删除或重新安置 artifacts 前必须获得确认；
 - 修改 `.gitignore`、`.git/info/exclude`、暂存、提交和推送前必须获得确认；
@@ -140,6 +146,7 @@ HandoffDocs/
     |   `-- openai.yaml
     `-- commands/
         |-- archivehandoff.md
+        |-- compacthandoff.md
         |-- handoffprompt.md
         |-- inithandoff.md
         |-- study.md
@@ -150,6 +157,7 @@ HandoffDocs/
 
 - **索引，不堆日志。** 仪表盘保持短小、可操作。
 - **任务上下文归任务文件。** 每个 Agent 级任务拥有自己的 handoff。
+- **活跃历史可外置。** 任务未结束但 handoff 过长时，先生成历史留档 report，再让当前 handoff 只保留可继续工作的上下文和留档链接。
 - **过程产物必须有归处。** 报告、输出、临时脚本和调试笔记不要散落在项目根。
 - **旧上下文默认可疑。** 时间戳产物可以提供线索，但不能自动成为当前事实。
 - **清理动作先确认。** 标记为候选移动或候选删除，不等于获得执行许可。

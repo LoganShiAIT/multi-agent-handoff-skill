@@ -17,9 +17,9 @@ Workflow:
    - Task slug and handoff path
    - Mission and success criteria
    - Relevant context
-   - Scope boundaries
-   - Required update behavior
-   - Return format
+- Scope boundaries
+- Required update behavior
+- Return format
 
 Prompt packet template:
 
@@ -36,6 +36,7 @@ Scope:
 - Do not edit other handoff task files.
 - You may update only your own task row in `HandoffDocs/handoff.md`; re-read the index immediately before editing, preserve unrelated rows, and make the smallest local edit.
 - Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or old artifacts unless the handoff explicitly references a specific file.
+- Treat `Compacted History` reports as historical detail. Read them only if the current handoff lacks context needed for the task or the user asks for older history.
 - Treat old timestamped artifacts as potentially stale or orphaned. Report them and verify before relying on their contents.
 - Do not move, delete, archive, or relocate files unless the user explicitly confirms that file operation.
 

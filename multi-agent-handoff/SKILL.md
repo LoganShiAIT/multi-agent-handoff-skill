@@ -1,21 +1,25 @@
 ---
 name: multi-agent-handoff
-description: Use when coordinating manually launched multi-agent work, preserving task context across Claude Code or Codex sessions, resuming a previous task thread, creating or updating handoff files, tracking agent progress, or preventing parallel agents from overwriting one shared context document.
+description: Use for project-local handoff coordination across manual Claude Code, Codex, or agent sessions: initialize, update, compact, prompt, study, or archive task handoff context.
 ---
 
 # Multi-Agent Handoff
 
-## Overview
+## Purpose
 
-Use one index handoff plus many focused task handoffs to coordinate manually launched agents. The index shows what is active, blocked, done, or archived; each small handoff owns the context and progress for one agent task.
+Use one compact index plus one focused task handoff per agent-level task. The index shows active, blocked, done, and archived work. Each task handoff owns the context, progress, artifacts, and next prompt for one resumable thread of work.
 
-This template uses `HandoffDocs/handoff.md` plus `HandoffDocs/handoffs/` as the default project-local handoff structure. If adapting it for a specific user or team, replace the default handoff root while keeping the same index-plus-task-files pattern.
+Default to `HandoffDocs/` as the project-local handoff root unless project or user instructions name a different root. Keep handoff files factual, incremental, and short enough for another agent to resume without replaying the whole conversation.
 
-For Claude Code, pair this skill with slash commands such as `/inithandoff`, `/tracehandoff`, and `/handoffprompt`. The commands provide explicit moments to initialize, update, and package handoff context instead of relying on a user-level prompt to remember timing.
+## Activation Boundary
+
+Do not create or update handoff files for every conversation. Create or select a handoff only for concrete project work that benefits from continuity: code changes, investigation, debugging, validation, multi-agent delegation, artifact generation, or work likely to continue across sessions.
+
+Do not initialize handoff context for casual chat, one-off Q&A, pure concept explanation, early brainstorming before a task is chosen, or reading-only discussion that will not create decisions, files, progress, or follow-up work. If a conversation becomes actionable, ask whether to create or attach a handoff topic.
 
 ## Directory Pattern
 
-Use this structure inside a project-local handoff root:
+Use this default structure:
 
 ```text
 HandoffDocs/
@@ -37,143 +41,32 @@ HandoffDocs/
         `-- misc/
 ```
 
-Default to `HandoffDocs/`. Treat `<HANDOFF_ROOT>` as a placeholder only when adapting the template to a different directory.
-
-Alternative roots:
-
-- `handoff/` or `.handoff/` for a generic project-local system.
-- A documented project directory when handoffs are intended to be shared team artifacts.
-
-`handoff.md` is the coordination index only. Put detailed active context in `handoffs/<task-slug>.md`. Use kebab-case slugs such as `api-auth-investigation`, `frontend-table-refactor`, or `migration-test-failures`.
-
-Keep `handoffs/` for active or resumable task handoffs only. Move closed, stale, superseded, or failed-experiment task files to `archive/YYYY-MM/`. Put debugging and acceptance byproducts under `artifacts/<task-slug>/` instead of project root.
-
-`archive/`, `study/`, and historical `artifacts/` are not default operational context. Do not read them during normal task startup or continuation unless the user explicitly asks, the active task handoff links to a specific file, or a command such as `/archivehandoff` or `/study` requires it.
-
-## Command Roles
-
-Use commands as explicit workflow gates:
-
-- `/inithandoff`: Enter a project, inspect its structure, combine that with the user's current request, then create or select the handoff topic.
-- `/tracehandoff`: Manually update the current topic after work, investigation, agent returns, blockers, or changed next steps.
-- `/handoffprompt`: Generate a strict prompt packet for another manually launched agent or fresh session. It does not launch the agent; it produces the text to paste into that agent/session.
-- `/archivehandoff`: Audit the task and workspace, prepare an archive plan, then close or quarantine a task handoff only after the user confirms file moves or deletion.
-- `/study`: Create a personal HTML learning note from a task case, knowledge point, personal reflection, or summary.
-
-The command files are optional helpers. The skill body remains the source of truth for behavior.
-
-## Activation Boundary
-
-Do not create or update handoff files for every conversation.
-
-Create or select a handoff only when there is a concrete project task that benefits from continuity, such as code changes, investigation, debugging, validation, multi-agent delegation, artifact generation, or work likely to continue across sessions.
-
-Do not initialize handoff for:
-
-- Casual chat
-- One-off Q&A
-- Concept explanation without project action
-- Brainstorming before the user chooses a concrete task
-- Reading-only discussion that will not create decisions, progress, files, or follow-up work
-
-If the user casually mentions an idea but has not turned it into a task, discuss normally. If it starts becoming actionable, ask whether to create or attach a handoff topic.
-
-## Command Suggestion Protocol
-
-Slash commands are workflow shortcuts, not the only way to use this system. Users may forget or prefer natural language.
-
-At the end of any handoff-related action, proactively suggest the next useful command and a natural-language alternative. Keep it to one short line, for example:
-
-- `Next: /tracehandoff after the next code change, or just tell me "update the handoff".`
-- `Next: /handoffprompt <slug> if you want to start another agent, or ask me to "make a prompt for the next agent".`
-- `Next: /archivehandoff <slug> when this topic is done, or say "archive this handoff".`
-- `Next: /study <topic> if this taught you something worth keeping, or say "make a study note".`
-
-Do not nag or list every command. Suggest only the single command that matches the current state.
-
-## Filesystem Operations Checklist
-
-Use this checklist instead of duplicating directory rules in commands:
-
-- Initialize root: create `HandoffDocs/`, `HandoffDocs/handoffs/`, `HandoffDocs/archive/`, `HandoffDocs/study/`, and `HandoffDocs/artifacts/`.
-- Initialize task: create `HandoffDocs/handoffs/<task-slug>.md` and `HandoffDocs/artifacts/<task-slug>/{reports,test-scripts,test-results,misc}/`.
-- Archive task: create `HandoffDocs/archive/YYYY-MM/` only after the user confirms the archive action.
-- Create study note: create `HandoffDocs/study/<study-scope>/` before writing the HTML note, unless a user/project-specific personal notes policy overrides the study location.
-- Never assume `HandoffDocs/` is private. Choose private/local or shared/team policy first.
-
-## Confirmation Boundary For File Operations
-
-Archive audit is allowed to inspect, classify, and propose actions. It must not silently move, delete, or relocate files.
-
-Without explicit user confirmation, agents may:
-
-- Create or update handoff documents under `HandoffDocs/`.
-- Create expected handoff directories.
-- Read, list, and classify candidate files.
-- Update `HandoffDocs/handoff.md` using the Index Update Protocol.
-- Add archive proposals, cleanup plans, and gentle labels to the task handoff.
-
-Require explicit user confirmation before:
-
-- Moving a task handoff from `handoffs/` to `archive/`.
-- Copying a task handoff into `archive/` as the final archive record.
-- Deleting the active task handoff after archiving.
-- Moving, deleting, or relocating artifacts.
-- Deleting or moving any file outside `HandoffDocs/artifacts/<task-slug>/`.
-- Modifying `.gitignore`, `.git/info/exclude`, staging files, committing files, or pushing changes.
-
-Use gentle labels before confirmation:
-
-```text
-keep
-move-candidate
-promote-candidate
-external-owned
-ignore-as-stale-candidate
-orphan-candidate
-delete-candidate
-archive-candidate
-needs-user-confirmation
-```
-
-Use final action labels only after the action is actually confirmed and completed:
-
-```text
-kept
-moved
-promoted
-external-owned
-ignored-as-stale
-confirmed-orphan
-deleted-confirmed
-archived-confirmed
-```
-
-Never treat `delete-candidate` as permission to delete. A file may be proposed for deletion when it was clearly created by the current task and indexed, but actual deletion always requires explicit user confirmation.
-
-## External Workflow Ownership
-
-Respect other skills, frameworks, and project workflows that define their own file layout. Their artifacts belong where that workflow says they belong.
-
-Examples include spec systems, architecture docs, formal design docs, permanent tests, generated app code, release notes, migration files, and any skill-specific outputs with an established directory.
-
 Rules:
 
-- Do not move external workflow artifacts into `HandoffDocs/`.
-- Do not archive external workflow artifacts with `/archivehandoff`.
-- Do not classify expected external workflow files as scattered temporary files.
-- Do reference external artifacts by path in the active task handoff when they matter.
-- If an external workflow's artifact conflicts with the handoff, treat the external workflow artifact as the stronger source of truth and mark the handoff as needing clarification.
+- `handoff.md` is the coordination index only. Keep each row to one line of operational signal.
+- `handoffs/<task-slug>.md` holds active or resumable task context. Use kebab-case slugs.
+- `artifacts/<task-slug>/` holds process byproducts such as reports, scratch validation scripts, test outputs, debug dumps, and screenshots.
+- `archive/`, `study/`, and historical artifacts are not default operational context. Do not read them during normal startup or continuation unless the user asks, the active handoff links to a specific file, or a command requires it.
+- Never assume `HandoffDocs/` is private. Choose private/local or shared/team policy before changing ignore rules or committing handoff files.
 
-Use this priority when sources disagree:
+## Command Routing
 
-```text
-External workflow formal artifacts > current source code/config > active task handoff > active artifacts explicitly referenced by handoff > archive/study/historical artifacts
-```
+Slash commands are workflow gates. Natural-language requests such as "update the handoff" or "make a prompt for the next agent" should follow the matching command workflow.
 
-## Index Template
+When using one of these actions, read the matching command file before acting; the command file is the detailed workflow authority:
 
-Use `handoff.md` as a compact dashboard:
+- `/inithandoff`: initialize or select the project handoff topic. Read `commands/inithandoff.md`.
+- `/tracehandoff`: update the current handoff with progress, blockers, validation, or next steps. Read `commands/tracehandoff.md`.
+- `/compacthandoff`: create a historical report, then compact oversized active handoff context without closing the task. Read `commands/compacthandoff.md`.
+- `/handoffprompt`: generate a prompt packet for another manually launched agent or fresh session. Read `commands/handoffprompt.md`.
+- `/archivehandoff`: audit and archive a closed, superseded, abandoned, stale, or failed-experiment task. Read `commands/archivehandoff.md`.
+- `/study`: create a personal HTML learning note from a task, knowledge point, reflection, or summary. Read `commands/study.md`.
+
+After a handoff-related action, suggest only the single next useful command plus a natural-language alternative, for example: `Next: /tracehandoff after the next code change, or just tell me "update the handoff".`
+
+## Index And Task Ownership
+
+Use `HandoffDocs/handoff.md` as a compact dashboard:
 
 ```markdown
 # Handoff Index
@@ -181,7 +74,6 @@ Use `handoff.md` as a compact dashboard:
 ## Active
 | Slug | Owner | Status | Scope | Next Action | Updated |
 | --- | --- | --- | --- | --- | --- |
-| [api-auth-investigation](handoffs/api-auth-investigation.md) | agent-a | in-progress | Auth failures in API tests | Verify token refresh path | 2026-07-01 |
 
 ## Blocked
 | Slug | Owner | Blocker | Needed |
@@ -196,27 +88,15 @@ Use `handoff.md` as a compact dashboard:
 | --- | --- | --- | --- |
 ```
 
-Keep each index row to one line of operational signal. Do not store long analysis, logs, or full agent transcripts in the index. Keep archived rows short; the archive file holds the final summary.
+Before editing the index, re-read `HandoffDocs/handoff.md`, change only the affected row or minimal section, preserve unrelated rows exactly, and merge locally if another agent changed the file. If a safe merge is not obvious, update the task handoff with an index update request and ask the user or coordinator to reconcile.
 
-## Index Update Protocol
+Each agent owns its task handoff and may update only its own index row unless acting as a coordinator. If two agents need the same files or domain, merge the task under one owner or make the dependency explicit in both task handoffs.
 
-`handoff.md` is a shared coordination file. Every agent may update it for real-time coordination, but only through local, minimal edits.
+Record branch or worktree in the task handoff and index row when multiple branches or worktrees are involved.
 
-Agents may update their own task row when status, blocker, owner, scope, next action, archive proposal, or archive completion changes. They should not rewrite unrelated rows or reorganize the whole index unless the user explicitly asks.
+## Task Handoff Shape
 
-Before editing `handoff.md`:
-
-1. Re-read `HandoffDocs/handoff.md` immediately before editing.
-2. Change only the affected row or the minimal relevant section.
-3. Preserve unrelated rows exactly.
-4. If the file changed since the agent last read it, merge locally rather than overwrite.
-5. If a conflict cannot be resolved safely, update the task handoff with an index update request and ask the user or coordinator to reconcile.
-
-A coordinator may still exist as the agent that splits tasks, resolves conflicts, and performs broad cleanup, but coordinator status is not required for a task owner to keep its own index row current.
-
-## Task Handoff Template
-
-Create one file per manually launched agent task:
+Create one task handoff per manually launched agent-level task. Include these sections unless a command says otherwise:
 
 ```markdown
 # <Task Title>
@@ -254,14 +134,14 @@ Create one file per manually launched agent task:
 - Other byproducts:
 
 ## Study Notes
-Personal learning notes generated from this task.
-
 | Path | Topic | Key Lesson | Created |
 | --- | --- | --- | --- |
 
-## Extra File Index
-Track every non-source or temporary file created outside `HandoffDocs/artifacts/<task-slug>/`. Do not index expected artifacts that belong to another workflow's declared file layout unless they are suspicious, temporary, or misplaced.
+## Compacted History
+| Record | Covered Range | Summary | Created |
+| --- | --- | --- | --- |
 
+## Extra File Index
 | Path | Why It Exists | Decision Label | Cleanup Status |
 | --- | --- | --- | --- |
 
@@ -272,225 +152,70 @@ Track every non-source or temporary file created outside `HandoffDocs/artifacts/
 - Prompt for the next agent:
 ```
 
-Keep task handoffs factual and incremental. Write enough for another agent to continue without replaying the whole conversation, but avoid dumping raw logs unless the log is the artifact.
+Update the task handoff before real work begins once the requirement is clear. Update it again after meaningful edits, investigation, failed attempts, validation, returned agent summaries, blockers, or changed next steps. Prefer short append-only entries over rewriting history.
 
-## Artifact Placement And Extra File Indexing
+## Artifacts And Trust
 
-During debugging, validation, acceptance testing, or program modification, put generated process artifacts under `HandoffDocs/artifacts/<task-slug>/` with timestamped names. Do this for temporary documents, validation scripts, exploratory test scripts, test outputs, test reports, debug dumps, screenshots, and investigation notes.
+Put temporary or process artifacts under `HandoffDocs/artifacts/<task-slug>/` with local timestamps like `YYYYMMDD-HHMMSS`. Keep handoff entries to conclusions plus artifact paths; do not paste long logs, generated reports, or raw test output into active handoffs.
 
-Use these folders:
+Do not put deliverable source code, permanent tests, formal specs, migration files, official docs, or intentionally committed scripts under `HandoffDocs/artifacts/`. Those belong in the normal project tree or the owning workflow's directory.
 
-```text
-HandoffDocs/artifacts/<task-slug>/
-|-- reports/
-|   `-- YYYYMMDD-HHMMSS-short-title.md
-|-- test-scripts/
-|   `-- YYYYMMDD-HHMMSS-short-title.<ext>
-|-- test-results/
-|   `-- YYYYMMDD-HHMMSS-short-title.<ext>
-`-- misc/
-    `-- YYYYMMDD-HHMMSS-short-title.<ext>
-```
+Track every non-source or temporary file created outside `HandoffDocs/artifacts/<task-slug>/` in `Extra File Index`, unless it is an expected artifact owned by another workflow. Include path, why it exists, candidate decision label, and cleanup status.
 
-Prefer local timestamp format `YYYYMMDD-HHMMSS`. If the artifact is large, keep the handoff entry to a short conclusion plus the artifact path. Do not paste long logs, generated reports, or raw test output into `handoffs/<task-slug>.md`.
+Treat old timestamped artifacts as potentially stale until verified against active handoff context, current source/config, or fresh checks. Treat artifacts as stale candidates when they are older than 24 hours, older than relevant source/config changes, unreferenced by the active handoff, under another slug, under `archive/`, or in an unknown folder. Report stale or orphan candidates instead of trusting them silently.
 
-Do not put deliverable source code, permanent test files, official project docs, formal spec artifacts, or intentionally committed scripts in `HandoffDocs/artifacts/`. Those belong in the normal project tree or the owning workflow's directory.
-
-## Timestamp Trust Rules
-
-Treat timestamps as trust signals, not just labels for humans. When an agent sees an older artifact, report its age and treat its content as potentially stale until confirmed by the active handoff, current source files, or fresh verification.
-
-Treat an artifact as a stale candidate if any of these are true:
-
-- Its timestamp is more than 24 hours old.
-- It is older than the most recent relevant source/config change.
-- It is not referenced by the current task handoff's `Progress Log`, `Artifacts`, `Study Notes`, or `Extra File Index`.
-- It belongs to another task slug, `archive/`, or an unknown folder.
-
-Use these rules:
-
-- Recent and referenced by the active handoff: safe to inspect, but still summarize rather than paste.
-- Old but referenced by the active handoff: report that it is old, verify against current files or rerun relevant checks before relying on it.
-- Old and not referenced by the active handoff: treat as a possible orphan file from an unfinished or unarchived task. Do not trust it as current context. Report it and add it to `Extra File Index` if it affects the task.
-- Any artifact under `archive/` or artifacts belonging to another slug: do not read by default unless the user asks or the active handoff explicitly points there.
-
-If a timestamped file appears important but old, say so explicitly in the handoff update: `Potential stale/orphan artifact: <path> (<timestamp>). Not trusted until verified.`
-
-When a process artifact or temporary helper must be created outside `HandoffDocs/artifacts/<task-slug>/`, immediately record it in the task handoff's `Extra File Index`. Include:
-
-- Path
-- Why it exists
-- Whether to keep, mark as a move candidate into `HandoffDocs/artifacts/<task-slug>/`, mark as a delete candidate, or promote into the formal project tree
-- Cleanup status
-
-Examples of indexed extra files include temporary scripts in project root, one-off reports, scratch fixtures, copied datasets, generated screenshots, debug logs, and experimental config files. This index is mandatory whenever the task creates non-source files outside the controlled artifacts directory, except for expected artifacts owned by another workflow.
-
-Also index suspicious old timestamped files that appear relevant but are not referenced by the active handoff. Mark them as `unknown`, `orphan?`, or `needs verification` until resolved.
-
-At the end of a handoff, review `Extra File Index` before archiving. Before user confirmation, mark each file with a gentle candidate label such as `move-candidate`, `delete-candidate`, `orphan-candidate`, or `needs-user-confirmation`. After confirmed actions are completed, update labels to final states such as `kept`, `moved`, `deleted-confirmed`, `promoted`, `ignored-as-stale`, or `confirmed-orphan`. Do not archive a handoff while unknown extra files are still unclassified.
-
-## Study Notes
-
-Use `/study` to turn an actual task, knowledge point, personal reflection, or short summary into a personal learning note. These notes are for the learner, not for team-facing postmortems. Prefer reflective, practical writing over status reporting.
-
-Study notes are personal learning material, not task authority. Do not load `HandoffDocs/study/` during normal task work. Read a study note only when the user asks for learning material, when running `/study`, or when the active handoff explicitly references a specific note as relevant context.
-
-Do not force a rigid section template. Choose the shape that best fits the case and the learner's intent. The note may be a debugging case study, architecture reading guide, build-process reflection, proposal review, technology crash course, operational playbook, or "what I learned from this incident" essay.
-
-Create study notes as timestamped HTML files:
+Respect external workflow ownership. Do not move, archive, or classify expected outputs from other skills, frameworks, spec systems, docs workflows, test frameworks, or project-defined output directories as scattered handoff artifacts. If sources disagree, use this priority:
 
 ```text
-HandoffDocs/study/<study-scope>/YYYYMMDD-HHMMSS-short-title.html
+External workflow formal artifacts > current source code/config > active task handoff > active artifacts explicitly referenced by handoff > archive/study/historical artifacts
 ```
 
-Use the task slug as `<study-scope>` when the note is tied to a handoff task. Use a kebab-case topic slug such as `typescript-generics`, `code-review-habits`, or `internship-reflection` when it is a standalone knowledge point or personal reflection.
+## Context Length Policy
 
-If project or user instructions define a personal notes root, standalone knowledge or reflection notes should use that root instead of `HandoffDocs/study/`. Keep task-linked notes in `HandoffDocs/study/<task-slug>/` when they are part of the handoff evidence trail.
+Use `/compacthandoff` when active context is still useful but too long. Compaction creates a historical report first, then rewrites the active handoff or index into shorter current context with links back to the report. It is not archival.
 
-A study note can be one of these modes:
+Target budgets:
 
-- Task case: based on a concrete handoff task and its investigation.
-- Knowledge point: explains a concept, API, architecture pattern, tool, or engineering practice.
-- Personal reflection: captures personal understanding, confusion, growth, work habits, mentor feedback, or internship observations.
-- Summary: consolidates several related learnings into a compact guide.
+- `HandoffDocs/handoff.md`: 120 lines.
+- `HandoffDocs/handoffs/<task-slug>.md`: 260 lines.
+- Active index `Done` and `Archived`: keep at most the most recent 20 rows each.
+- Active index `Compacted History`: keep at most the most recent 10 rows.
 
-It should usually include some of these ingredients, but not necessarily in this order or with these exact headings:
+Never remove unresolved blockers, risks, user-confirmation items, cleanup candidates, artifact paths, or `Extra File Index` rows during compaction. Do not read unrelated `archive/`, `study/`, or historical artifacts unless the active handoff or index links to a specific compact history report needed for the compaction.
 
-- Real case: what happened in this task
-- Solution path: how the issue was understood and solved
-- Enterprise practice: what this reveals about mature engineering, architecture, quality, operations, collaboration, or review culture
-- Design principle: the reusable idea behind the solution
-- Personal takeaway: what the learner should remember next time
-- Reuse checklist: when and how to apply the lesson again
-- Questions to ask: mentor questions, docs to read, or deeper topics to study
+## Global Safety Rules
 
-Choose concrete headings that match the note, such as `Problem Context`, `Key Concept`, `Repository Structure`, `Debugging Trace`, `Decision Review`, `Future Debugging Method`, `Regression Checklist`, `Method Notes`, `What I Finally Understood`, `Open Questions`, or `Internship Takeaways`.
+Archive audit may inspect, classify, and propose actions, but must not silently move, copy, delete, or relocate files.
 
-After creating a task-linked study note, add it to the task handoff's `Study Notes` table. For standalone knowledge or reflection notes, do not force a handoff link; keep the note under the relevant `study/<study-scope>/` folder. If the note references old artifacts, apply Timestamp Trust Rules and label stale or unverified material clearly inside the note.
+Without explicit user confirmation, agents may create or update handoff documents, create expected handoff directories, create compact-history report artifacts, read/list/classify candidate files, update the index through the local edit protocol, and add archive proposals, cleanup plans, or gentle labels to a task handoff.
+
+Require explicit user confirmation before:
+
+- Moving or copying a task handoff into `archive/`.
+- Deleting an active task handoff after archiving.
+- Moving, deleting, relocating, or cleaning artifacts.
+- Deleting or moving any file outside `HandoffDocs/artifacts/<task-slug>/`.
+- Modifying `.gitignore`, `.git/info/exclude`, staging files, committing files, or pushing changes.
+
+Use gentle labels before confirmation: `keep`, `move-candidate`, `promote-candidate`, `external-owned`, `ignore-as-stale-candidate`, `orphan-candidate`, `delete-candidate`, `archive-candidate`, `needs-user-confirmation`.
+
+Use final labels only after the confirmed action is complete: `kept`, `moved`, `promoted`, `external-owned`, `ignored-as-stale`, `confirmed-orphan`, `deleted-confirmed`, `archived-confirmed`.
+
+Never treat `delete-candidate` as permission to delete.
 
 ## Coordinator Workflow
 
-When starting a multi-agent effort:
+When starting multi-agent work, select or create the handoff root, create the index if missing, split work into independent task slugs, create one task handoff per manual agent, put only summary rows in the index, and tell each agent to update its own task handoff plus its own index row.
 
-1. Select or create `HandoffDocs/` unless the project explicitly uses another handoff root.
-2. Create `handoff.md` if missing.
-3. Split the work into independent task slugs.
-4. Create one `handoffs/<task-slug>.md` per manual agent.
-5. Put only the summary row in `handoff.md`.
-6. Give each agent its own task handoff path and tell it to update that task handoff plus its own index row through the Index Update Protocol.
+When resuming, read `handoff.md` first. If the user names a slug or task, read that task handoff. If multiple active tasks exist and the user does not identify one, ask which task to resume or whether to create a new task. Do not read `archive/`, `study/`, or historical artifacts unless the user or active handoff points there.
 
-When resuming:
+When an agent returns, read its task handoff and summary, update task status and `Handoff Back`, update the corresponding index row, and move work to `Done` only when it is genuinely integrated or intentionally closed.
 
-1. Read `handoff.md` first.
-2. If the user names a slug or task, read that task handoff.
-3. If the user does not identify a task and multiple active tasks exist, ask which task to resume or whether to create a new task.
-4. Use the task handoff as the continuity context, especially `Mission`, `Progress Log`, and `Handoff Back`.
-5. Do not read `archive/`, `study/`, or historical `artifacts/` during resume unless specifically directed by the active handoff or user.
-
-When an agent returns:
-
-1. Read its task handoff and returned summary.
-2. Update the task status and `Handoff Back`.
-3. Update the corresponding index row using the Index Update Protocol.
-4. Move completed tasks to `Done` only after the work is genuinely integrated or intentionally closed.
-5. Archive tasks with `/archivehandoff` or the Archive Workflow below when the task is closed, superseded, abandoned, stale, or a failed experiment.
-
-## Archive Workflow
-
-Archive to prevent old context from polluting active work.
-
-1. Confirm the slug and archive reason: `done`, `superseded`, `abandoned`, `stale`, or `failed-experiment`.
-2. Read `HandoffDocs/handoffs/<task-slug>.md`.
-3. Run a pre-archive audit. Do not perform file moves or deletions during the audit:
-   - Check `Extra File Index` and classify every extra file with a gentle label such as `keep`, `move-candidate`, `delete-candidate`, `promote-candidate`, `external-owned`, `ignore-as-stale-candidate`, `orphan-candidate`, or `needs-user-confirmation`.
-   - Check `HandoffDocs/artifacts/<task-slug>/` and confirm artifacts are indexed or intentionally historical.
-   - Check for scattered temporary files in the project root and likely scratch locations, excluding expected artifacts owned by other workflows.
-   - Check for old timestamped files related to the slug that are not referenced by the active handoff.
-   - If in a git repository, inspect changed and untracked files so temporary byproducts are not confused with deliverable source changes or expected external workflow artifacts.
-   - Confirm no other active handoff depends on this task without a replacement link.
-4. Add an `Archive Plan` near the top and ask the user to confirm before moving or deleting anything. The plan should present the default archive action as a full move, and ask the user to explicitly say if they want copy-only/no active-file removal instead.
-
-```markdown
-## Archive Plan
-- Proposed At:
-- Reason:
-- Final Outcome:
-- Proposed Archive Path:
-- Index Change:
-- File Move/Delete Actions Requiring Confirmation:
-- Gentle Labels Applied:
-- Still Needs User Confirmation:
-```
-
-5. If the user does not confirm, stop after updating the task handoff and optionally set the index row to `archive-candidate` or `needs-user-confirmation`.
-6. After user confirmation for a full archive move, add or refresh an `Archive Summary` near the top. If the user confirms copy-only/no active-file removal, keep it as an archive candidate and add a brief copied-archive note instead of an `Archive Summary`.
-
-```markdown
-## Archive Summary
-- Archived At:
-- Reason:
-- Final Outcome:
-- Do Not Reuse:
-- Useful If:
-- Superseded By:
-- Extra File Cleanup:
-- Stale/Orphan Artifacts:
-- Pre-Archive Audit:
-```
-
-7. Create `HandoffDocs/archive/YYYY-MM/` if missing.
-8. Re-read `HandoffDocs/handoff.md` immediately before editing.
-9. By default, perform a confirmed archive as a move: create `HandoffDocs/archive/YYYY-MM/<task-slug>.md`, update the index, then remove the active `HandoffDocs/handoffs/<task-slug>.md` only after the archived file and index update both succeed.
-10. If the user explicitly confirms copy-only/no active-file removal, copy the task file to `HandoffDocs/archive/YYYY-MM/<task-slug>.md`, keep the active file indexed, and mark the active row as `archive-candidate` or `copied-to-archive` instead of treating the task as fully archived.
-11. For a confirmed move, remove it from `Active` or `Blocked` in `handoff.md` using a local row edit.
-12. For a confirmed move, add a short row to `Archived` in `handoff.md`.
-13. Leave task artifacts in `HandoffDocs/artifacts/<task-slug>/` unless the user explicitly confirmed artifact cleanup. Mark them historical and do not read them by default.
-
-When resuming work, do not read `archive/`, `study/`, or historical `artifacts/` unless the user names an archived slug, asks for learning or historical context, or the active handoff explicitly points to a specific file.
-
-## Agent Prompt Contract
-
-When manually launching an agent, `/handoffprompt` or the coordinator should produce a compact prompt packet like this:
-
-```markdown
-You are working on `<task-slug>`.
-
-Read `HandoffDocs/handoffs/<task-slug>.md` before starting.
-Keep your scope to the Mission section.
-Append concise progress to Progress Log.
-Update Handoff Back before returning.
-Do not edit other task handoff files.
-You may update only your own row in `HandoffDocs/handoff.md` through the Index Update Protocol.
-Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or old artifacts unless this task handoff explicitly links to a specific file.
-
-Return:
-- What you changed or found
-- Files touched
-- Verification run
-- Remaining blockers
-```
-
-## Update Rules
-
-Update the task handoff before real work begins once the user's requirement is clear. This captures the mission before context drifts.
-
-Update the task handoff after meaningful project edits, investigations, failed attempts, or blocker discoveries. Prefer short append-only entries over rewriting history.
-
-Update the index when status, owner, scope, blocker, or next action changes. Avoid index churn for tiny progress updates.
-
-## Collision Avoidance
-
-Use one handoff file per task because parallel agents may otherwise overwrite each other's context. Individual agents own their task files and may update only their own index row. A coordinator, if present, handles task splitting, broad reconciliation, and conflict resolution.
-
-If two agents need the same files or domain, either merge their task into one owner or make the dependency explicit in both task handoffs.
-
-If multiple worktrees or branches are involved, record the branch or worktree in the task metadata and index row.
-
-## Git and Privacy Policy
+## Git And Privacy Policy
 
 Follow the project's policy for whether handoffs are committed:
 
-- Private/local handoffs: prefer adding `HandoffDocs/` or the configured handoff root to `.git/info/exclude` for local-only protection. Use `.gitignore` only when the team should share the ignore rule.
+- Private/local handoffs: prefer adding `HandoffDocs/` or the configured handoff root to `.git/info/exclude` for local-only protection.
 - Shared/team handoffs: keep them in a normal docs location and commit them like other project docs.
 
-If policy is unclear, ask before modifying `.gitignore`, `.git/info/exclude`, staging, or committing handoff files.
+If policy is unclear, ask before modifying `.gitignore`, `.git/info/exclude`, staging, committing, or pushing handoff files.
