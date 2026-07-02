@@ -6,6 +6,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
+## Required References
+
+Read these before creating or selecting a handoff:
+
+- `references/write-safety.md`
+- `references/handoff-formats.md`
+
 Initialize or select a handoff context after the work is understood. Prefer `/explorehandoff` first when task shape is unclear.
 
 Modes:
@@ -40,13 +47,13 @@ Workflow:
 2. Resolve mode from `$ARGUMENTS` and user intent. If full is not explicit, use light. If the task is clearly full-weight but the user did not request full, ask before creating full.
 3. Inspect the project briefly: README, package manifests, config files, and major source directories. Avoid broad historical handoff reads.
 4. For light:
-   - Read and follow the skill's `Filesystem Operations Checklist`.
+   - Follow `references/write-safety.md`.
    - Create `HandoffDocs/light/` if missing.
    - Create or select `HandoffDocs/light/<task-slug>.md`.
-   - Use the light template from the skill. Include user request, goal, scope, key facts, inspected files, commands run, current progress, recommended next step, verification, and handoff prompt.
+   - Use the light template from `references/handoff-formats.md`. Include user request, goal, scope, key facts, inspected files, commands run, current progress, recommended next step, verification, and handoff prompt.
    - Do not create or update `HandoffDocs/handoff.md`, `handoffs/`, `artifacts/`, `archive/`, or `study/`.
 5. For full:
-   - Read and follow the skill's `Filesystem Operations Checklist`.
+   - Follow `references/write-safety.md` and `references/handoff-formats.md`.
    - If `HandoffDocs/handoff.md` does not exist, create the full index and full task handoff from the user's request or `$ARGUMENTS`.
    - If `HandoffDocs/handoff.md` exists, read it first. If the user or `$ARGUMENTS` names a task, read that full task handoff. If multiple active tasks exist and no task is clear, list them and ask which to continue or whether to create a new one.
    - Determine whether handoffs are private/local or shared/team.

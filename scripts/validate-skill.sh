@@ -6,6 +6,7 @@ repo_root="$(cd "$script_dir/.." && pwd)"
 skill_dir="$repo_root/multi-agent-handoff"
 skill_file="$skill_dir/SKILL.md"
 commands_dir="$skill_dir/commands"
+references_dir="$skill_dir/references"
 errors=()
 
 require_path() {
@@ -27,24 +28,55 @@ require_grep() {
 
 require_path "$skill_file" "SKILL.md"
 require_path "$commands_dir" "commands directory"
+require_path "$references_dir" "references directory"
 
+declared_commands=()
 if [ -f "$skill_file" ]; then
   require_grep '^name:[[:space:]]*multi-agent-handoff[[:space:]]*$' "$skill_file" "SKILL.md name frontmatter"
   require_grep '^description:[[:space:]]*.+' "$skill_file" "SKILL.md description frontmatter"
-  require_grep '^## Explore-First Policy$' "$skill_file" "Explore-First Policy"
-  require_grep '^## Light Vs Full Handoff$' "$skill_file" "Light Vs Full Handoff"
-  require_grep '^## Filesystem Operations Checklist$' "$skill_file" "Filesystem Operations Checklist"
+  require_grep '^## Lazy Command Routing$' "$skill_file" "Lazy Command Routing"
+
+  skill_size="$(wc -c < "$skill_file" | tr -d '[:space:]')"
+  if [ "$skill_size" -gt 8192 ]; then
+    errors+=("SKILL.md is too large: ${skill_size} bytes > 8192 bytes")
+  fi
 
   while IFS= read -r command_name; do
     [ -n "$command_name" ] || continue
+    declared_commands+=("$command_name")
     require_path "$commands_dir/$command_name" "declared command $command_name"
   done < <(grep -Eo 'Read `commands/[^`]+\.md`' "$skill_file" | sed -E 's/.*commands\/([^`]+).*/\1/' | sort -u)
 fi
 
-init_command="$commands_dir/inithandoff.md"
-require_path "$init_command" "inithandoff command"
-if [ -f "$init_command" ]; then
-  require_grep 'Filesystem Operations Checklist' "$init_command" "inithandoff checklist reference"
+if [ -d "$commands_dir" ]; then
+  for command_file in "$commands_dir"/*.md; do
+    [ -e "$command_file" ] || continue
+    require_grep '^## Required References$' "$command_file" "$(basename "$command_file") Required References section"
+
+    command_name="$(basename "$command_file")"
+    routed=false
+    for declared_command in "${declared_commands[@]}"; do
+      if [ "$declared_command" = "$command_name" ]; then
+        routed=true
+        break
+      fi
+    done
+    if [ "$routed" = false ]; then
+      errors+=("Command file is not routed from SKILL.md: $command_name")
+    fi
+  done
+fi
+
+if [ -f "$skill_file" ] || [ -d "$commands_dir" ]; then
+  while IFS= read -r reference_name; do
+    [ -n "$reference_name" ] || continue
+    require_path "$references_dir/$reference_name" "declared reference $reference_name"
+  done < <(
+    {
+      [ -f "$skill_file" ] && grep -Eho '`references/[^`]+\.md`' "$skill_file" || true
+      [ -d "$commands_dir" ] && grep -Eho '`references/[^`]+\.md`' "$commands_dir"/*.md || true
+    } | sed -E 's/`references\/([^`]+\.md)`/\1/' | sort -u
+  )
 fi
 
 for example_path in \

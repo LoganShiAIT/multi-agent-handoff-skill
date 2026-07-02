@@ -6,6 +6,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
+## Required References
+
+Read these before auditing or archiving:
+
+- `references/write-safety.md`
+- `references/artifact-lifecycle.md`
+
 Audit the task and workspace, then prepare an archive plan for one full task handoff. This command is for full handoff tasks that are done, superseded, abandoned, stale, or failed experiments. It must not move, copy, delete, or relocate files until the user explicitly confirms those actions.
 
 This command applies only to full handoffs under `HandoffDocs/handoffs/`. If `$ARGUMENTS` names a light handoff under `HandoffDocs/light/`, stop and suggest either leaving the light note as-is, deleting it only with explicit user confirmation, or creating a full handoff first if archival governance is needed.

@@ -6,6 +6,10 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
+## Required References
+
+Read `references/write-safety.md` before creating or updating study notes.
+
 Create a personal learning note, not a team-facing report. The note can be based on a full handoff task, a knowledge point, a personal reflection, or a broader summary. The goal is to capture learning about engineering practice, design, debugging, review, operations, architecture, collaboration, or personal growth.
 
 Task-linked study notes attach only to full handoffs. If the topic is a light handoff, create a standalone note only when the user explicitly asks; otherwise suggest keeping the learning in the light handoff's `Next` section or creating a full handoff first.

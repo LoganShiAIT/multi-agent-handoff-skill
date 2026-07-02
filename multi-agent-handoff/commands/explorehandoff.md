@@ -6,6 +6,10 @@ allowed-tools: Read, Glob, Grep, LS, Bash
 
 Use the `multi-agent-handoff` skill.
 
+## Required References
+
+None. This command is read-only and should not load `references/` files.
+
 Explore the project and task shape before creating any handoff. This command is read-only for handoff state: do not create, edit, move, delete, archive, stage, commit, push, or modify `HandoffDocs/`, git metadata, or project files.
 
 Workflow:

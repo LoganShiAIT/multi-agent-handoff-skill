@@ -6,6 +6,12 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
+## Required References
+
+Read `references/write-safety.md` before updating any handoff.
+
+For full handoffs, also read `references/artifact-lifecycle.md` before recording artifacts, stale/orphan candidates, cleanup labels, or index changes.
+
 Maintain the current light handoff under `HandoffDocs/light/` or full task handoff under `HandoffDocs/handoffs/`.
 
 Workflow:

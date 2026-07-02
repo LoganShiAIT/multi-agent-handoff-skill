@@ -6,6 +6,10 @@ allowed-tools: Read, Glob, Grep, LS
 
 Use the `multi-agent-handoff` skill.
 
+## Required References
+
+None by default. This command reads selected handoff files and emits a prompt packet; do not load `references/` files unless the selected handoff explicitly points to one or the user asks.
+
 Generate a prompt packet for another manually launched agent or fresh session. This command does not launch an agent. It reads a light or full task handoff and outputs text the user can paste into Claude Code, Codex, or another agent session.
 
 Workflow:

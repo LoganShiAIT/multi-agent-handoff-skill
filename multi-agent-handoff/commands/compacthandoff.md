@@ -6,6 +6,13 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
 
 Use the `multi-agent-handoff` skill.
 
+## Required References
+
+Read these before compacting:
+
+- `references/write-safety.md`
+- `references/artifact-lifecycle.md`
+
 Compact oversized active full handoff context without closing the task. This command creates a historical report artifact first, then rewrites the active full handoff or index into a shorter current-context form with links back to the report.
 
 This command applies only to full handoffs. Light handoffs are intentionally too small for compaction; if a light handoff is too long, recommend creating a full handoff after user confirmation. This is not an archive command. Do not move, delete, archive, relocate, stage, commit, push, or modify git metadata.
