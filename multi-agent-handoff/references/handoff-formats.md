@@ -81,6 +81,10 @@ Rules:
 ## Archived
 | Slug | Archived At | Reason | Replacement |
 | --- | --- | --- | --- |
+
+## Compacted History
+| Record | Covered Range | Summary | Created |
+| --- | --- | --- | --- |
 ```
 
 ## Full Task Handoff Template

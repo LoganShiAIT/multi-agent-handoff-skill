@@ -1,7 +1,7 @@
 ---
 description: Explore whether work needs no handoff, a light handoff, or a full handoff
 argument-hint: "[task/topic/question]"
-allowed-tools: Read, Glob, Grep, LS, Bash
+allowed-tools: Read, Glob, Grep, Bash(git status:*), Bash(git log:*), Bash(ls:*)
 ---
 
 Use the `multi-agent-handoff` skill.

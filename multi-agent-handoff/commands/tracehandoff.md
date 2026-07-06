@@ -1,7 +1,7 @@
 ---
 description: Update a light or full handoff topic with progress and next steps
 argument-hint: "[--light | --full] [task-slug or update notes]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 Use the `multi-agent-handoff` skill.

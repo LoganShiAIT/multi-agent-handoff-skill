@@ -1,7 +1,7 @@
 ---
 description: Generate a transfer prompt packet from a light or full handoff
 argument-hint: "[--light | --full] <task-slug>"
-allowed-tools: Read, Glob, Grep, LS
+allowed-tools: Read, Glob, Grep
 ---
 
 Use the `multi-agent-handoff` skill.

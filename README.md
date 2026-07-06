@@ -213,14 +213,18 @@ Full handoff 的所有权规则很简单：
 |   |-- SKILL.md
 |   |-- agents/
 |   |   `-- openai.yaml
-|   `-- commands/
-|       |-- archivehandoff.md
-|       |-- compacthandoff.md
-|       |-- explorehandoff.md
-|       |-- handoffprompt.md
-|       |-- inithandoff.md
-|       |-- study.md
-|       `-- tracehandoff.md
+|   |-- commands/
+|   |   |-- archivehandoff.md
+|   |   |-- compacthandoff.md
+|   |   |-- explorehandoff.md
+|   |   |-- handoffprompt.md
+|   |   |-- inithandoff.md
+|   |   |-- study.md
+|   |   `-- tracehandoff.md
+|   `-- references/
+|       |-- artifact-lifecycle.md
+|       |-- handoff-formats.md
+|       `-- write-safety.md
 `-- scripts/
     |-- install.ps1
     |-- install.sh

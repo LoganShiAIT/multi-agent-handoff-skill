@@ -1,7 +1,7 @@
 ---
 description: Audit and archive a handoff task to prevent stale context pollution
 argument-hint: "<task-slug> [reason]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 Use the `multi-agent-handoff` skill.
