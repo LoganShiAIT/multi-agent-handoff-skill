@@ -1,0 +1,24 @@
+name: Validate skill
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  bash:
+    name: validate-skill.sh (Ubuntu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run validator
+        run: bash scripts/validate-skill.sh
+
+  powershell:
+    name: validate-skill.ps1 (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run validator
+        shell: pwsh
+        run: ./scripts/validate-skill.ps1
