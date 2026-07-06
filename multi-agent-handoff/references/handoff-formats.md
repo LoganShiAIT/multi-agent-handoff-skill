@@ -104,6 +104,12 @@ Create one full task handoff per manually launched agent-level task. Include the
 - Out of Scope:
 - Success Criteria:
 
+## Context Panel
+- Slot discusses:
+- Required files to read:
+- Optional files to read only if needed:
+- Do not read by default:
+
 ## Context Packet
 - User request:
 - Relevant project facts:
@@ -140,5 +146,14 @@ Create one full task handoff per manually launched agent-level task. Include the
 - Risks / blockers:
 - Prompt for the next agent:
 ```
+
+The `Context Panel` is the full handoff's first reading boundary. Keep it short and operational:
+
+- `Slot discusses` states the concrete topic or decision area owned by this handoff.
+- `Required files to read` lists only the files a continuing agent must inspect before acting.
+- `Optional files to read only if needed` lists narrow expansion paths, such as a command doc, spec file, or linked report.
+- `Do not read by default` names context that would usually pollute the task, such as `archive/`, `study/`, unrelated handoffs, old artifacts, or broad source folders.
+
+Update the panel whenever the task scope or required file set changes. Do not use it as a dumping ground for every file touched; it is a context budget for the next reader.
 
 Update the full task handoff before real work begins once the requirement is clear. Update it again after meaningful edits, investigation, failed attempts, validation, returned agent summaries, blockers, or changed next steps. Prefer short append-only entries over rewriting history.

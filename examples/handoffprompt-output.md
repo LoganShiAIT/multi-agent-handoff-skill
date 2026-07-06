@@ -4,6 +4,7 @@
 You are working on `api-auth-investigation`.
 
 First read `HandoffDocs/handoffs/api-auth-investigation.md`.
+Use its `Context Panel` to identify what this slot discusses, which files are required, and which broader context should not be read by default.
 
 Mission:
 - Identify why authenticated API calls return intermittent 401 responses in the sample service.
