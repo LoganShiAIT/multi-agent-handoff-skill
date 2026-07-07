@@ -1,7 +1,7 @@
 ---
 description: Compact oversized active handoff context into historical report artifacts
 argument-hint: "[task-slug | --index | --all]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 Use the `multi-agent-handoff` skill.

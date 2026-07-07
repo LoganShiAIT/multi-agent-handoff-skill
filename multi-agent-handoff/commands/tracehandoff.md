@@ -1,7 +1,7 @@
 ---
 description: Update a light or full handoff topic with progress and next steps
 argument-hint: "[--light | --full] [task-slug or update notes]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 Use the `multi-agent-handoff` skill.
@@ -38,6 +38,7 @@ Workflow:
    - Include timestamped artifact paths under `HandoffDocs/artifacts/<task-slug>/`, if any.
    - Include extra files created outside `HandoffDocs/artifacts/<task-slug>/`, if any.
    - Include old timestamped artifacts encountered and whether they were trusted, verified, or treated as stale/orphan.
+   - Update the `Context Panel` if the task's topic, required files, optional context, or default reading exclusions changed. A stale panel is a context leak for the next reader.
    - Update this task's index row only when status, blocker, owner, scope, next action, archive proposal, or archive completion changed. Re-read `HandoffDocs/handoff.md` immediately before editing, change only the affected row, and preserve unrelated rows.
    - If the index edit cannot be merged safely, leave an index update request in the task handoff's `Handoff Back` and ask the user or coordinator to reconcile.
 

@@ -14,6 +14,12 @@
 - Out of Scope: Rewriting the login UI or changing provider configuration.
 - Success Criteria: A follow-up agent can reproduce the failure, understand the likely cause, and continue from the next focused test.
 
+## Context Panel
+- Slot discusses: Intermittent 401 responses after token refresh in the sample API client.
+- Required files to read: `src/auth/client.ts`, `tests/auth-client.test.ts`
+- Optional files to read only if needed: `HandoffDocs/artifacts/api-auth-investigation/test-results/20260702-101100-auth-client.txt`
+- Do not read by default: `HandoffDocs/archive/`, `HandoffDocs/study/`, other task handoffs, unrelated source folders.
+
 ## Context Packet
 - User request: "Investigate intermittent API auth failures after token refresh."
 - Relevant project facts: The API client refreshes tokens on demand and retries once after a 401.

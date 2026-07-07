@@ -1,7 +1,7 @@
 ---
 description: Generate a transfer prompt packet from a light or full handoff
 argument-hint: "[--light | --full] <task-slug>"
-allowed-tools: Read, Glob, Grep, LS
+allowed-tools: Read, Glob, Grep
 ---
 
 Use the `multi-agent-handoff` skill.
@@ -35,6 +35,7 @@ Full prompt packet template:
 You are working on `<task-slug>`.
 
 First read `HandoffDocs/handoffs/<task-slug>.md`.
+Use its `Context Panel` to identify what this slot discusses, which files are required, and which broader context should not be read by default.
 
 Mission:
 - <copy or summarize mission>

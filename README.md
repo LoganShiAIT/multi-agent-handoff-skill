@@ -139,6 +139,7 @@ HandoffDocs/
 每个 full 任务 handoff 记录：
 
 - 任务目标、范围和成功标准；
+- 上下文面板（Context Panel）：这个槽位讨论什么、必读哪些文件、哪些内容默认不读；
 - 已查看的文件和已经运行过的命令；
 - 进度日志和关键决策；
 - 相关产物路径；
@@ -212,14 +213,18 @@ Full handoff 的所有权规则很简单：
 |   |-- SKILL.md
 |   |-- agents/
 |   |   `-- openai.yaml
-|   `-- commands/
-|       |-- archivehandoff.md
-|       |-- compacthandoff.md
-|       |-- explorehandoff.md
-|       |-- handoffprompt.md
-|       |-- inithandoff.md
-|       |-- study.md
-|       `-- tracehandoff.md
+|   |-- commands/
+|   |   |-- archivehandoff.md
+|   |   |-- compacthandoff.md
+|   |   |-- explorehandoff.md
+|   |   |-- handoffprompt.md
+|   |   |-- inithandoff.md
+|   |   |-- study.md
+|   |   `-- tracehandoff.md
+|   `-- references/
+|       |-- artifact-lifecycle.md
+|       |-- handoff-formats.md
+|       `-- write-safety.md
 `-- scripts/
     |-- install.ps1
     |-- install.sh

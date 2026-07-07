@@ -17,6 +17,10 @@ For every file operation:
 - Do not delete or move files outside `HandoffDocs/artifacts/<task-slug>/` without explicit user confirmation, even if they look temporary.
 - If a local merge, overwrite, archive, or cleanup is not obviously safe, stop after recording the issue in the task handoff and ask the user or coordinator to reconcile.
 
+## Timestamp Discipline
+
+Never write a timestamp from memory. Take artifact-name timestamps from the system clock with `date +%Y%m%d-%H%M%S`, and handoff date fields from `date '+%Y-%m-%d %H:%M:%S %Z'`. When judging whether an existing file is old or stale, compare filesystem modification times (`ls -lt`, `stat`) against the system clock instead of trusting the name alone.
+
 ## Confirmation Gates
 
 Full archive audit may inspect, classify, and propose actions, but must not silently move, copy, delete, or relocate files.

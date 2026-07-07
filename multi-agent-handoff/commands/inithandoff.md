@@ -1,7 +1,7 @@
 ---
 description: Create or select a light or full project handoff after exploration
 argument-hint: "[--light | --full] [task/topic description]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 Use the `multi-agent-handoff` skill.
@@ -56,6 +56,8 @@ Workflow:
    - Follow `references/write-safety.md` and `references/handoff-formats.md`.
    - If `HandoffDocs/handoff.md` does not exist, create the full index and full task handoff from the user's request or `$ARGUMENTS`.
    - If `HandoffDocs/handoff.md` exists, read it first. If the user or `$ARGUMENTS` names a task, read that full task handoff. If multiple active tasks exist and no task is clear, list them and ask which to continue or whether to create a new one.
+   - To add a new task to an existing index: create `HandoffDocs/handoffs/<task-slug>.md` from the full task template, then re-read `HandoffDocs/handoff.md` and add one `Active` row with a local edit that preserves unrelated rows.
+   - Give every new full task handoff a completed `Context Panel`: what the slot discusses, which files are required reading, which files are optional, and what should not be read by default.
    - Determine whether handoffs are private/local or shared/team.
    - For private/local handoffs in a git repository, ask for and receive explicit user confirmation before changing git metadata; after confirmation, prefer adding `HandoffDocs/` to `.git/info/exclude`.
    - Do not modify `.gitignore` unless the user confirms the ignore rule should be shared by the repo.

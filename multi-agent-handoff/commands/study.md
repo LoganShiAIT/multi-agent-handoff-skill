@@ -1,7 +1,7 @@
 ---
 description: Create a personal HTML learning note from a task, knowledge point, reflection, or summary
 argument-hint: "[task-slug | topic] [learning focus]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, LS
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 Use the `multi-agent-handoff` skill.
