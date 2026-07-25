@@ -54,6 +54,8 @@ cd multi-agent-handoff-skill
 .\scripts\install.ps1
 ```
 
+安装器会自动选择已有的技能目录：优先 `$HOME/.agents/skills`，其次兼容旧版或既有配置中的 `$CODEX_HOME/skills`（未设置 `CODEX_HOME` 时为 `$HOME/.codex/skills`）。两个目录都不存在时，会创建并使用 `$HOME/.agents/skills`。如需固定安装位置，可显式传入 `-CodexSkillsDir`（Windows）或 `--codex-dir`（macOS/Linux）。
+
 macOS 或 Linux：
 
 ```bash
