@@ -32,9 +32,12 @@
 
 `multi-agent-handoff` 用一个紧凑索引，加上每个任务一份独立 handoff 文件，来管理手动多 Agent 协作：
 
-- 每个任务都有自己的聚焦上下文；
-- 每个 Agent 只更新自己的任务文件和索引行；
+- task spec 负责初始化讨论、规范和工作项，execution handoff 只负责执行现场；
+- 优先绑定 OpenSpec、OPSX 或项目官方 spec，不复制外部规范；
+- 每个 work item 都有自己的聚焦执行上下文；
+- 每个 Agent 只更新自己的 execution handoff 和索引行；
 - 报告、测试输出、临时脚本、截图等过程产物放到可预测的位置；
+- 交接 prompt 只在明确请求时即时生成，不在 handoff 中后台维护；
 - 归档、学习笔记和旧时间戳产物默认不作为当前上下文读取；
 - 移动、删除、归档、修改 git 元数据等高风险操作必须先确认。
 
@@ -96,27 +99,33 @@ bash scripts/validate-skill.sh
 
 ## 工作流
 
-进入项目后，先用 `/explorehandoff` 只读探索任务形态。探索阶段不创建 `HandoffDocs/`，也不修改项目文件；它只判断本次工作是否需要 handoff，以及应该使用 light 还是 full。
+进入项目后，先用 `/explorehandoff` 只读探索任务形态。探索阶段不创建 `HandoffDocs/`，也不修改项目文件；它判断工作应直接回答、先建立 task spec，还是创建 light/full handoff。
 
 ```text
 /explorehandoff
    |
-   |-- none  -> 直接回答或继续探索，不建 handoff
+   |-- none  -> 直接回答或继续探索
+   |-- task  -> /inittask <slug> -> /updatetask <slug>
+   |                              `-> ready 后从 work item 建 execution handoff
    |-- light -> /inithandoff --light <slug>
    `-- full  -> 用户确认后 /inithandoff --full <slug>
 ```
 
-正式 handoff 分两种：
+协调状态分三种：
 
 | 模式 | 适用场景 | 产物 |
 | --- | --- | --- |
+| Task Spec | 初始化讨论、需求规范、设计、工作拆分 | 外部 spec 绑定，或 `HandoffDocs/tasks/<task-slug>/` |
 | Light | 小问题、单任务续接、一次交接即可继续 | `HandoffDocs/light/<task-slug>.md` |
 | Full | 多 Agent、跨会话、artifacts、阻塞、归档、压缩或项目级协调 | `HandoffDocs/handoff.md` + `handoffs/` + `artifacts/` |
 
-Light 是单文件便签，不维护总 index，不扫描历史 artifacts，不执行 archive/study/compact。Full 才启用完整项目级治理。默认的项目内 handoff 根目录是 `HandoffDocs/`：
+Task Spec 与执行状态分离：存在 OpenSpec、OPSX 或项目官方规范时，`HandoffDocs/tasks/<slug>/task.md` 只保存绑定；没有外部规范时才创建 `brief.md`、`spec.md`、可选 `design.md` 和 `tasks.md`。Light 是独立单文件便签，不绑定 task spec。Full 才启用执行级治理。
 
 ```text
 HandoffDocs/
+|-- tasks/
+|   `-- add-profile-filters/
+|       `-- task.md
 |-- light/
 |   |-- api-auth-investigation.md
 |   `-- ...
@@ -134,10 +143,11 @@ HandoffDocs/
         `-- misc/
 ```
 
-`handoff.md` 是 full 模式的项目仪表盘，只存放 active、blocked、done、archived 等任务行。详细上下文放在 `handoffs/<task-slug>.md`。
+`handoff.md` 是 full 模式的执行仪表盘，只存放 active、blocked、done、archived 等执行槽。详细执行上下文放在 `handoffs/<execution-slug>.md`。
 
 每个 full 任务 handoff 记录：
 
+- 可选 Task Binding：task record、work item、spec owner 和必读规范路径；
 - 任务目标、范围和成功标准；
 - 上下文面板（Context Panel）：这个槽位讨论什么、必读哪些文件、哪些内容默认不读；
 - 已查看的文件和已经运行过的命令；
@@ -145,11 +155,15 @@ HandoffDocs/
 - 相关产物路径；
 - 压缩过的历史明细留档，以及当前 handoff 指向这些留档的索引；
 - 在受控 artifacts 目录之外创建的额外临时文件；
-- 交还给下一位 Agent 的当前状态、下一步和风险。
+- 当前执行状态、下一步和风险。
+
+普通实质工作完成后，Agent 仍会对活跃 handoff 做最小状态同步，但这不是 `/tracehandoff` 命令，也不会提示用户运行该命令。`/tracehandoff` 只处理用户明确要求的补记或同步。
+
+`/handoffprompt` 是只读、按需、终止型动作。只有明确输入命令或明确要求生成交接 prompt 时才会运行；输出只出现在当次回复，不写回 handoff，也不会被其他命令推荐。接收 Agent 在共享工作区里直接更新自己的 execution handoff，因此原会话不需要再运行 trace 来接收结果。
 
 当活跃 handoff 变得过长时，可以用 `/compacthandoff` 先生成一份历史明细 report，再把当前 handoff 精简成仍然可继续工作的上下文。这样历史修改细节不会丢失，但默认启动新 Agent 时也不会被旧日志拖慢。
 
-可以先看 [`examples/explore-output.md`](examples/explore-output.md) 理解探索输出，看 [`examples/light-handoff/`](examples/light-handoff/) 理解 light 便签，看 [`examples/basic-handoff/`](examples/basic-handoff/) 理解 full 索引和活跃任务文件，再看 [`examples/compact-history/`](examples/compact-history/)、[`examples/light-handoffprompt-output.md`](examples/light-handoffprompt-output.md) 与 [`examples/handoffprompt-output.md`](examples/handoffprompt-output.md) 理解压缩历史和交接提示词的形态。
+可以先看 [`examples/explore-output.md`](examples/explore-output.md) 理解探索输出，再看 [`examples/task-spec-internal/`](examples/task-spec-internal/) 和 [`examples/task-spec-external/`](examples/task-spec-external/) 对比内部规范与外部绑定。Light/full、压缩历史和手动 prompt 输出分别位于 [`examples/light-handoff/`](examples/light-handoff/)、[`examples/basic-handoff/`](examples/basic-handoff/)、[`examples/compact-history/`](examples/compact-history/) 和 [`examples/handoffprompt-output.md`](examples/handoffprompt-output.md)。
 
 ## 命令
 
@@ -157,11 +171,13 @@ HandoffDocs/
 
 | 命令 | 用途 |
 | --- | --- |
-| `/explorehandoff` | 只读探索任务形态，推荐 none、light 或 full，不写 handoff 文件。 |
-| `/inithandoff` | 在探索后创建或选择 light/full handoff；无参数默认 light，full 需要明确意图或确认。 |
-| `/tracehandoff` | 追加 light 或 full 的进度、验证结果和下一步。 |
+| `/explorehandoff` | 只读探索任务形态，推荐 none、task、light 或 full。 |
+| `/inittask` | 初始化内部 task spec，或绑定外部规范并创建 task record。 |
+| `/updatetask` | 更新 task spec、绑定、工作项或 readiness；ready 必须由用户明确确认。 |
+| `/inithandoff` | 创建 light/full handoff，或用 `--from-task ... --work-item ...` 创建绑定执行槽。 |
+| `/tracehandoff` | 仅在用户明确触发时，把指定进展补记到已有 handoff。 |
 | `/compacthandoff` | 仅用于 full，为过长活跃 handoff 生成历史留档 report 并压缩当前上下文。 |
-| `/handoffprompt` | 从 light 或 full 生成给另一个 Agent 或新会话的提示词包。 |
+| `/handoffprompt` | 明确请求时即时生成提示词包；只读、不落盘、不被其他命令推荐。 |
 | `/archivehandoff` | 仅用于 full，审计任务、分类产物，并准备需要用户确认的归档动作。 |
 | `/study` | 生成个人学习笔记；任务绑定只面向 full handoff。 |
 
@@ -169,11 +185,12 @@ HandoffDocs/
 
 并行 Agent 只有在上下文不互相踩踏时才有价值。
 
-Full handoff 的所有权规则很简单：
+Task spec 与 full handoff 的所有权规则很简单：
 
-- 一个 Agent 级任务对应一个 task slug；
-- 一个任务对应一个 handoff 文件；
-- 一个任务只占用索引里的一行；
+- 一个 task spec 可以拆成多个 work item；
+- 一个 work item 对应一个 execution handoff；
+- 每个 execution handoff 只占用索引里的一行；
+- task/spec 只由协调者或显式 task 更新动作维护；
 - 对共享索引只做最小局部编辑；
 - 过长的活跃上下文先留档再压缩，留档 report 由 handoff 内的历史索引指向；
 - 不读取 `archive/`、`study/` 或历史 artifacts，除非当前 handoff 或用户明确指向某个文件。
@@ -185,6 +202,7 @@ Full handoff 的所有权规则很简单：
 这个 skill 对文件操作保持保守：
 
 - 正常工作中可以创建和更新 handoff 文件；
+- 创建内部 task spec 或外部绑定不等于获得外部规范写权限；
 - 压缩上下文前必须先创建历史留档 report，失败则不改写原 handoff；
 - 把任务移动到 `archive/` 前必须获得确认；
 - 移动、删除或重新安置 artifacts 前必须获得确认；
@@ -208,6 +226,8 @@ Full handoff 的所有权规则很简单：
 |   |-- explore-output.md
 |   |-- light-handoff/
 |   |-- light-handoffprompt-output.md
+|   |-- task-spec-external/
+|   |-- task-spec-internal/
 |   `-- handoffprompt-output.md
 |-- multi-agent-handoff/
 |   |-- SKILL.md
@@ -219,11 +239,14 @@ Full handoff 的所有权规则很简单：
 |   |   |-- explorehandoff.md
 |   |   |-- handoffprompt.md
 |   |   |-- inithandoff.md
+|   |   |-- inittask.md
 |   |   |-- study.md
-|   |   `-- tracehandoff.md
+|   |   |-- tracehandoff.md
+|   |   `-- updatetask.md
 |   `-- references/
 |       |-- artifact-lifecycle.md
 |       |-- handoff-formats.md
+|       |-- task-specs.md
 |       `-- write-safety.md
 `-- scripts/
     |-- install.ps1
@@ -235,7 +258,9 @@ Full handoff 的所有权规则很简单：
 ## 设计原则
 
 - **索引，不堆日志。** 仪表盘保持短小、可操作。
-- **任务上下文归任务文件。** 每个 Agent 级任务拥有自己的 handoff。
+- **编排与执行分离。** task spec 管目标与工作项，handoff 管执行现场。
+- **外部规范优先。** 已有 OpenSpec、OPSX 或官方 spec 时只保存绑定。
+- **Prompt 按需生成。** 普通维护不保存、不刷新、不推荐交接 prompt。
 - **活跃历史可外置。** 任务未结束但 handoff 过长时，先生成历史留档 report，再让当前 handoff 只保留可继续工作的上下文和留档链接。
 - **过程产物必须有归处。** 报告、输出、临时脚本和调试笔记不要散落在项目根。
 - **旧上下文默认可疑。** 时间戳产物可以提供线索，但不能自动成为当前事实。

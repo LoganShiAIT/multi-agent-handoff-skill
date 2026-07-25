@@ -1,5 +1,5 @@
 ---
-description: Explore whether work needs no handoff, a light handoff, or a full handoff
+description: Explore whether work needs no state, task planning, or a light/full handoff
 argument-hint: "[task/topic/question]"
 allowed-tools: Read, Glob, Grep, Bash(git status:*), Bash(git log:*), Bash(ls:*)
 ---
@@ -8,22 +8,23 @@ Use the `multi-agent-handoff` skill.
 
 ## Required References
 
-None. This command is read-only and should not load `references/` files.
+None. Keep exploration read-only and do not load `references/`.
 
-Explore the project and task shape before creating any handoff. This command is read-only for handoff state: do not create, edit, move, delete, archive, stage, commit, push, or modify `HandoffDocs/`, git metadata, or project files.
+Inspect the project and classify the requested work without creating or editing `HandoffDocs/`, project files, or git metadata.
 
 Workflow:
 
-1. Clarify the user's request or `$ARGUMENTS` into a short task/topic.
-2. Inspect only the files needed to understand the task: README, package manifests, relevant config, obvious entry points, existing `HandoffDocs/handoff.md` or `HandoffDocs/light/` listings if present, and targeted source files.
-3. Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, historical artifacts, or compact-history reports unless the user explicitly asks or a currently active handoff links to a specific file needed for understanding.
-4. Do not create or modify handoff files. If the user asks to save exploration results, explain that `/inithandoff --light` creates a project-local light note and `/inithandoff --full` creates full coordination.
-5. Classify task shape:
-   - `none`: casual Q&A, pure explanation, reading-only discovery, or a task unlikely to need continuity.
-   - `light`: one focused task or small investigation that may benefit from a single continuation note.
-   - `full`: multi-agent work, cross-session project state, artifacts, blockers, archive needs, multiple task slugs, or stale-context risk.
+1. Clarify the task/topic from the user request or `$ARGUMENTS`.
+2. Inspect only README, manifests, project instructions, likely spec roots, relevant entry points, and active handoff/task listings needed to understand task shape.
+3. Do not read archive, study, or historical artifacts unless explicitly required.
+4. Classify:
+   - `none`: one-off answer or reading-only discovery.
+   - `task`: requirements discussion, spec binding, design decisions, multiple work items, or orchestration should precede execution.
+   - `light`: one focused continuation note without formal orchestration.
+   - `full`: direct execution needs index, artifacts, blockers, archive, or multi-agent ownership but no separate task spec is needed.
+5. Check whether OpenSpec, OPSX, or a project-defined formal spec appears to own the task. Report candidates without selecting among ambiguous changes.
 
-Output exactly these sections:
+Output exactly:
 
 ```markdown
 ## Exploration Result
@@ -31,8 +32,9 @@ Output exactly these sections:
 - Checked:
 - Key findings:
 - Task shape:
-- Handoff recommendation: none | light | full
+- Coordination recommendation: none | task | light | full
+- Spec source candidates:
 - Suggested next action:
 ```
 
-If recommending `light`, include a suggested kebab-case slug and say `/inithandoff --light <slug>` can create the note. If recommending `full`, say full should be created only after user confirmation with `/inithandoff --full <slug>`.
+If recommending task planning, give a kebab-case slug and say `/inittask <slug>` can initialize or bind it. If recommending a handoff, give the matching `/inithandoff --light|--full <slug>` action. These are the only routine command transitions this skill may proactively recommend.

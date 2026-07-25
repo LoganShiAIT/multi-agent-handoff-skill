@@ -1,28 +1,27 @@
 # Handoff Formats
 
-Use these templates when creating or repairing handoff files.
+Use these templates when creating or repairing handoff files. Task-spec templates live in `references/task-specs.md`.
 
 ## Directory Pattern
 
-Light handoffs may use only `HandoffDocs/light/`. Full handoffs use the complete structure:
-
 ```text
 HandoffDocs/
+|-- tasks/
+|   `-- <task-slug>/
+|       `-- task.md
 |-- light/
-|   |-- <task-slug>.md
-|   `-- ...
+|   `-- <task-slug>.md
 |-- handoff.md
 |-- handoffs/
-|   |-- <task-slug>.md
-|   `-- ...
+|   `-- <execution-slug>.md
 |-- archive/
 |   `-- YYYY-MM/
-|       `-- <task-slug>.md
+|       `-- <execution-slug>.md
 |-- study/
 |   `-- <study-scope>/
 |       `-- YYYYMMDD-HHMMSS-short-title.html
 `-- artifacts/
-    `-- <task-slug>/
+    `-- <execution-slug>/
         |-- reports/
         |-- test-scripts/
         |-- test-results/
@@ -31,11 +30,13 @@ HandoffDocs/
 
 Rules:
 
-- `light/<task-slug>.md` is a single-task continuation note. It does not require an index, artifacts, archive, study notes, compaction, or stale-artifact scanning.
-- `handoff.md` is the full coordination index only. Keep each row to one line of operational signal.
-- `handoffs/<task-slug>.md` holds full active or resumable task context. Use kebab-case slugs.
-- `artifacts/<task-slug>/` holds full handoff process byproducts.
-- `archive/`, `study/`, and historical artifacts are not default operational context. Do not read them during normal startup or continuation unless the user asks, the active handoff links to a specific file, or a command requires it.
+- `tasks/<task-slug>/` holds orchestration state or an external-spec binding.
+- `light/<task-slug>.md` is an independent continuation note without task binding.
+- `handoff.md` is the full execution index only.
+- `handoffs/<execution-slug>.md` holds active or resumable execution context.
+- `artifacts/<execution-slug>/` holds handoff-owned process byproducts.
+- `archive/`, `study/`, and historical artifacts are not default operational context.
+- Never store a generated transfer prompt in a light or full handoff.
 
 ## Light Handoff Template
 
@@ -58,7 +59,7 @@ Rules:
 ## Next
 - Recommended next step:
 - Verification:
-- Handoff prompt:
+- Risks / blockers:
 ```
 
 ## Full Index Template
@@ -87,12 +88,12 @@ Rules:
 | --- | --- | --- | --- |
 ```
 
-## Full Task Handoff Template
+## Full Execution Handoff Template
 
-Create one full task handoff per manually launched agent-level task. Include these sections unless a command says otherwise:
+Create one full handoff per execution slot:
 
 ```markdown
-# <Task Title>
+# <Execution Title>
 
 ## Metadata
 - Slug:
@@ -107,6 +108,14 @@ Create one full task handoff per manually launched agent-level task. Include the
 - Goal:
 - Out of Scope:
 - Success Criteria:
+
+## Task Binding
+- Task Record:
+- Work Item:
+- Spec Owner: internal | external
+- Workflow:
+- Required Context:
+- Binding Status: current | blocked
 
 ## Context Panel
 - Slot discusses:
@@ -148,16 +157,23 @@ Create one full task handoff per manually launched agent-level task. Include the
 - Current state:
 - Next recommended step:
 - Risks / blockers:
-- Prompt for the next agent:
 ```
 
-The `Context Panel` is the full handoff's first reading boundary. Keep it short and operational:
+For a task-bound handoff, complete `Task Binding` from `task.md` and the selected work item. For an unbound legacy or directly initialized full handoff, omit the section instead of inventing a task record.
 
-- `Slot discusses` states the concrete topic or decision area owned by this handoff.
-- `Required files to read` lists only the files a continuing agent must inspect before acting.
-- `Optional files to read only if needed` lists narrow expansion paths, such as a command doc, spec file, or linked report.
-- `Do not read by default` names context that would usually pollute the task, such as `archive/`, `study/`, unrelated handoffs, old artifacts, or broad source folders.
+Keep `Context Panel` short:
 
-Update the panel whenever the task scope or required file set changes. Do not use it as a dumping ground for every file touched; it is a context budget for the next reader.
+- `Slot discusses` states the owned execution topic.
+- `Required files to read` includes the task record and required spec paths when bound.
+- `Optional files to read only if needed` names narrow expansion paths.
+- `Do not read by default` excludes archive, study, unrelated handoffs, old artifacts, and broad source folders.
 
-Update the full task handoff before real work begins once the requirement is clear. Update it again after meaningful edits, investigation, failed attempts, validation, returned agent summaries, blockers, or changed next steps. Prefer short append-only entries over rewriting history.
+## Maintenance Boundary
+
+Update the active handoff concisely after meaningful implementation, investigation, failed attempts, validation, blockers, or changed next steps. This routine maintenance is not a command invocation and must not produce command recommendations.
+
+Treat legacy `Handoff prompt` or `Prompt for the next agent` fields as inert historical content:
+
+- Do not refresh or use them during normal maintenance.
+- Do not remove them during unrelated updates.
+- During explicit compaction, preserve their old contents only in the compact-history report and omit them from active context.

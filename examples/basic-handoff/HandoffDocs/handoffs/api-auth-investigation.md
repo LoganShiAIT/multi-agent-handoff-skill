@@ -18,7 +18,7 @@
 - Slot discusses: Intermittent 401 responses after token refresh in the sample API client.
 - Required files to read: `src/auth/client.ts`, `tests/auth-client.test.ts`
 - Optional files to read only if needed: `HandoffDocs/artifacts/api-auth-investigation/test-results/20260702-101100-auth-client.txt`
-- Do not read by default: `HandoffDocs/archive/`, `HandoffDocs/study/`, other task handoffs, unrelated source folders.
+- Do not read by default: `HandoffDocs/archive/`, `HandoffDocs/study/`, other execution handoffs, unrelated source folders.
 
 ## Context Packet
 - User request: "Investigate intermittent API auth failures after token refresh."
@@ -56,4 +56,3 @@
 - Current state: Failure is narrowed to retry header reuse after token refresh.
 - Next recommended step: Add a focused test that asserts the retry request uses the refreshed token.
 - Risks / blockers: No blocker; avoid changing unrelated login behavior.
-- Prompt for the next agent: Continue `api-auth-investigation` by adding a regression test around refreshed retry headers, then patch only the API client retry path.

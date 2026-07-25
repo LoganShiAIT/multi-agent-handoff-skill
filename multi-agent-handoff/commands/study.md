@@ -1,6 +1,6 @@
 ---
 description: Create a personal HTML learning note from a task, knowledge point, reflection, or summary
-argument-hint: "[task-slug | topic] [learning focus]"
+argument-hint: "[execution-slug | topic] [learning focus]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -10,28 +10,28 @@ Use the `multi-agent-handoff` skill.
 
 Read `references/write-safety.md` before creating or updating study notes.
 
-Create a personal learning note, not a team-facing report. The note can be based on a full handoff task, a knowledge point, a personal reflection, or a broader summary. The goal is to capture learning about engineering practice, design, debugging, review, operations, architecture, collaboration, or personal growth.
+Create a personal learning note, not a team-facing report. The note can be based on a full execution handoff, a knowledge point, a personal reflection, or a broader summary. The goal is to capture learning about engineering practice, design, debugging, review, operations, architecture, collaboration, or personal growth.
 
-Task-linked study notes attach only to full handoffs. If the topic is a light handoff, create a standalone note only when the user explicitly asks; otherwise suggest keeping the learning in the light handoff's `Next` section or creating a full handoff first.
+Handoff-linked study notes attach only to full execution handoffs. If the topic is a light handoff, create a standalone note only when the user explicitly asks; otherwise stop and explain that linked study requires full coordination.
 
 Do not force a fixed outline. Match the shape of the note to the case. It can read like a debugging case study, architecture reading guide, build-process reflection, proposal review, technology crash course, operational playbook, or personal "what I learned" essay.
 
 Workflow:
 
 1. Determine the study mode:
-   - Task case: `$ARGUMENTS` names an active full handoff task.
+   - Handoff case: `$ARGUMENTS` names an active full execution handoff.
    - Knowledge point: `$ARGUMENTS` names a concept, tool, API, pattern, or practice.
    - Personal reflection: `$ARGUMENTS` asks for感悟, 反思, 总结, or personal understanding.
    - Summary: `$ARGUMENTS` asks to consolidate several learnings.
-2. If it is task-linked, read `HandoffDocs/handoff.md` and `HandoffDocs/handoffs/<task-slug>.md`. If ambiguous, list active full tasks and ask. Do not attach study notes to `HandoffDocs/light/`.
+2. If it is handoff-linked, read `HandoffDocs/handoff.md` and `HandoffDocs/handoffs/<execution-slug>.md`. If ambiguous, list active full execution slots and ask. Do not attach study notes to `HandoffDocs/light/`.
 3. If it is standalone, use a kebab-case topic slug as `<study-scope>` and do not require a handoff file.
 4. Inspect only the files needed to understand the learning. Do not read `archive/`, existing `study/` notes, or old artifacts unless the active handoff explicitly references them or the user asks for historical/learning material.
 5. Treat old timestamped artifacts as potentially stale or orphaned. If used, label them as verified or unverified in the note.
 6. Choose the output root:
-   - Task-linked notes: `HandoffDocs/study/<task-slug>/`.
+   - Handoff-linked notes: `HandoffDocs/study/<execution-slug>/`.
    - Standalone notes: use the project/user personal notes root if one is defined; otherwise use `HandoffDocs/study/<study-scope>/`.
 7. Create `YYYYMMDD-HHMMSS-short-title.html` in the chosen output folder.
-8. If task-linked, add the note path to the task handoff's `Study Notes` table. If standalone, just report the note path.
+8. If handoff-linked, add the note path to the execution handoff's `Study Notes` table. If standalone, just report the note path.
 
 HTML note requirements:
 
@@ -70,4 +70,4 @@ Possible section patterns. Pick what fits; do not include all by default:
 </section>
 ```
 
-End by reporting the created HTML path and the one most important lesson. Suggest `/tracehandoff <task-slug>` only if the note was task-linked and the handoff should record the learning; otherwise do not suggest extra commands.
+Report the created HTML path and the one most important lesson. If handoff-linked, add the note to the selected handoff as part of the same action. End after reporting.

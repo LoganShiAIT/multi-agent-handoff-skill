@@ -16,4 +16,4 @@
 ## Next
 - Recommended next step: Add a focused regression test for retry headers after refresh.
 - Verification: Re-run `npm test -- auth-client`.
-- Handoff prompt: Continue from `HandoffDocs/light/api-auth-investigation.md`; keep the task scoped to API client retry behavior unless artifacts or cross-session coordination make full handoff tracking necessary.
+- Risks / blockers: No blocker; keep the task scoped to API client retry behavior.

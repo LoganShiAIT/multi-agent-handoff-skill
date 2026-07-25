@@ -1,4 +1,4 @@
 interface:
   display_name: "Multi-Agent Handoff"
-  short_description: "Preserve, update, and transfer multi-agent handoff context"
-  default_prompt: "Use $multi-agent-handoff to preserve continuity, update progress, or prepare a prompt for the next agent/session."
+  short_description: "Bind task specs and coordinate resumable execution"
+  default_prompt: "Use $multi-agent-handoff to bind task specs and coordinate resumable execution context."

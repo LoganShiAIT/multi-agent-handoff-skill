@@ -1,6 +1,6 @@
 ---
-description: Create or select a light or full project handoff after exploration
-argument-hint: "[--light | --full] [task/topic description]"
+description: Create or select a light, full, or task-bound execution handoff
+argument-hint: "[--light | --full | --from-task <task-slug> --work-item <id>] [topic]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
@@ -13,55 +13,45 @@ Read these before creating or selecting a handoff:
 - `references/write-safety.md`
 - `references/handoff-formats.md`
 
-Initialize or select a handoff context after the work is understood. Prefer `/explorehandoff` first when task shape is unclear.
+Read `references/task-specs.md` only for `--from-task`.
+
+Initialize execution continuity after the task is understood.
 
 Modes:
 
-- `--light`: Create or select a single-file continuation note under `HandoffDocs/light/`.
-- `--full`: Create or select full project coordination using index, full task handoff, and optional artifacts.
-- No explicit mode: default to `--light` unless the user explicitly asks for full coordination.
-
-Light structure:
-
-```text
-HandoffDocs/
-└── light/
-    └── <task-slug>.md
-```
-
-Full structure:
-
-```text
-HandoffDocs/
-├── handoff.md
-├── handoffs/
-│   └── <task-slug>.md
-├── archive/
-├── study/
-└── artifacts/
-```
+- `--light <slug>`: independent continuation note under `HandoffDocs/light/`.
+- `--full <slug>`: unbound full execution handoff.
+- `--from-task <task-slug> --work-item <id>`: task-bound full execution handoff.
+- No explicit mode: use light unless the user explicitly requested full coordination.
 
 Workflow:
 
-1. Confirm this is a concrete project task that needs continuity. Do not create handoff for casual chat, one-off Q&A, pure explanation, or early brainstorming without an actionable task.
-2. Resolve mode from `$ARGUMENTS` and user intent. If full is not explicit, use light. If the task is clearly full-weight but the user did not request full, ask before creating full.
-3. Inspect the project briefly: README, package manifests, config files, and major source directories. Avoid broad historical handoff reads.
-4. For light:
-   - Follow `references/write-safety.md`.
-   - Create `HandoffDocs/light/` if missing.
-   - Create or select `HandoffDocs/light/<task-slug>.md`.
-   - Use the light template from `references/handoff-formats.md`. Include user request, goal, scope, key facts, inspected files, commands run, current progress, recommended next step, verification, and handoff prompt.
-   - Do not create or update `HandoffDocs/handoff.md`, `handoffs/`, `artifacts/`, `archive/`, or `study/`.
-5. For full:
-   - Follow `references/write-safety.md` and `references/handoff-formats.md`.
-   - If `HandoffDocs/handoff.md` does not exist, create the full index and full task handoff from the user's request or `$ARGUMENTS`.
-   - If `HandoffDocs/handoff.md` exists, read it first. If the user or `$ARGUMENTS` names a task, read that full task handoff. If multiple active tasks exist and no task is clear, list them and ask which to continue or whether to create a new one.
-   - To add a new task to an existing index: create `HandoffDocs/handoffs/<task-slug>.md` from the full task template, then re-read `HandoffDocs/handoff.md` and add one `Active` row with a local edit that preserves unrelated rows.
-   - Give every new full task handoff a completed `Context Panel`: what the slot discusses, which files are required reading, which files are optional, and what should not be read by default.
-   - Determine whether handoffs are private/local or shared/team.
-   - For private/local handoffs in a git repository, ask for and receive explicit user confirmation before changing git metadata; after confirmation, prefer adding `HandoffDocs/` to `.git/info/exclude`.
-   - Do not modify `.gitignore` unless the user confirms the ignore rule should be shared by the repo.
-   - Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or historical artifacts unless the user or selected active handoff explicitly points to a specific file.
-6. Before starting implementation work, update the chosen light or full handoff with the current mission, status, and next step.
+1. Resolve mode, slug, and scope. If existing light/full candidates are ambiguous, list them and ask which one to select. Do not create state for casual chat or reading-only work.
+2. Inspect the project briefly and avoid historical context.
+3. For light:
+   - Create or select `HandoffDocs/light/<slug>.md`; never overwrite an existing note during selection.
+   - Use the light template.
+   - Do not create task bindings, full index, artifacts, archive, or study state.
+4. For unbound full:
+   - Create or select `HandoffDocs/handoffs/<slug>.md`; never overwrite an existing handoff during selection.
+   - Create the full index if missing and add only this execution row.
+   - Create `HandoffDocs/artifacts/<slug>/{reports,test-scripts,test-results,misc}/`.
+   - Complete the Mission and Context Panel.
+   - Omit `Task Binding`.
+5. For `--from-task`:
+   - Require both task slug and work-item ID.
+   - Read `HandoffDocs/tasks/<task-slug>/task.md`.
+   - Require task status `ready` or `in-progress`; if `draft` or `blocked`, stop and report the required state correction.
+   - Resolve the declared work-item source and require the ID to exist.
+   - Verify every required context path.
+   - Normalize the execution slug as `<task-slug>--<lowercase-work-item-id>`.
+   - If that handoff already exists, select it only after verifying its Task Binding matches the requested task/work item.
+   - Create the full handoff, index row, and `HandoffDocs/artifacts/<execution-slug>/{reports,test-scripts,test-results,misc}/`.
+   - Fill `Task Binding` and include the task record plus required spec paths in the Context Panel.
+   - Change task status from `ready` to `in-progress` and add one Execution Bindings row. Preserve spec content.
+6. Determine whether project-local state is private/local or shared/team. Do not modify `.gitignore`, `.git/info/exclude`, stage, commit, or push without explicit authorization.
+7. Before editing `HandoffDocs/handoff.md`, re-read it and make the smallest local change.
+8. Use system-clock timestamps.
+9. Never create or store a transfer prompt during initialization.
 
-End by reporting the selected mode, slug, path, and immediate focus. Suggest `/tracehandoff <slug>` after changes or `/handoffprompt <slug>` before launching another agent, plus a natural-language alternative.
+Report mode, execution slug, handoff path, task/work-item binding if any, and immediate execution focus. End after reporting.

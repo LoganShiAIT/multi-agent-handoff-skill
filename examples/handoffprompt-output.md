@@ -1,30 +1,26 @@
-# Example Handoff Prompt Output
+# Example On-Demand Handoff Prompt Output
+
+This text is emitted only after an explicit prompt-generation request and is not saved in `HandoffDocs/`.
 
 ```markdown
-You are working on `api-auth-investigation`.
+You are executing `W-01` for task `add-profile-filters`.
 
-First read `HandoffDocs/handoffs/api-auth-investigation.md`.
-Use its `Context Panel` to identify what this slot discusses, which files are required, and which broader context should not be read by default.
+Read:
+- `HandoffDocs/tasks/add-profile-filters/task.md`
+- `openspec/changes/add-profile-filters/proposal.md`
+- `openspec/changes/add-profile-filters/specs/profile/spec.md`
+- `openspec/changes/add-profile-filters/tasks.md`
+- `HandoffDocs/handoffs/add-profile-filters--w-01.md`
 
-Mission:
-- Identify why authenticated API calls return intermittent 401 responses in the sample service.
-- Success means the next agent can reproduce the issue and continue from a focused test or patch.
-
-Scope:
-- Work only within the task boundaries in the handoff.
-- Do not edit other handoff task files.
-- You may update only your own task row in `HandoffDocs/handoff.md`; re-read the index immediately before editing, preserve unrelated rows, and make the smallest local edit.
-- Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or old artifacts unless the handoff explicitly references a specific file.
-- Treat old timestamped artifacts as potentially stale or orphaned. Report them and verify before relying on their contents.
-- Do not move, delete, archive, or relocate files unless the user explicitly confirms that file operation.
+Use the Task Binding and Context Panel as the reading boundary. Execute only W-01. Do not edit task specs or other handoff slots unless the user explicitly expands scope.
 
 Before returning:
-- Append concise progress to `HandoffDocs/handoffs/api-auth-investigation.md`.
-- Save generated reports, test scripts, test results, and temporary notes under timestamped paths in `HandoffDocs/artifacts/api-auth-investigation/`.
-- Refresh the Handoff Back section with current state, next step, risks, and blockers.
+- Update `HandoffDocs/handoffs/add-profile-filters--w-01.md` with progress, verification, blockers, and next step.
+- Update only its owned row in `HandoffDocs/handoff.md` when operational status changed.
+- Put temporary execution artifacts under `HandoffDocs/artifacts/add-profile-filters--w-01/`.
 
 Return:
-- What you changed or found
+- What changed or was found
 - Files touched
 - Verification run
 - Remaining blockers
