@@ -1,9 +1,9 @@
 # Handoff Index
 
 ## Active
-| Slug | Owner | Status | Scope | Next Action | Updated |
-| --- | --- | --- | --- | --- | --- |
-| api-auth-investigation | Codex session A | in-progress | Investigate API auth failures in the sample service | Re-run focused auth tests after token refresh handling is patched | 2026-07-02 10:12 |
+| Slug | Owner | Status | Next Action | Updated |
+| --- | --- | --- | --- | --- |
+| [api-auth-investigation](handoffs/api-auth-investigation.md) | Codex session A | in-progress | Add a test asserting the retry uses the refreshed token | 2026-07-02 |
 
 ## Blocked
 | Slug | Owner | Blocker | Needed |

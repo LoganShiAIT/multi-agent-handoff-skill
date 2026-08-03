@@ -7,7 +7,7 @@ You are working from light handoff `api-auth-investigation`.
 
 First read `HandoffDocs/light/api-auth-investigation.md`.
 
-Mission:
+Goal:
 - Check why API auth sometimes returns 401 after token refresh.
 - Keep the work scoped to API client retry behavior.
 
@@ -17,8 +17,8 @@ Scope:
 - If the work exceeds this light handoff's scope, record the blocker and return without silently expanding the file.
 
 Before returning:
-- Append concise progress to the light handoff.
-- Refresh the Next section with current next step, verification, and risks.
+- Refresh the status block and frontmatter `updated`.
+- Append to `Log` only what cannot be derived from code, specs, or git.
 
 Return:
 - What you changed or found

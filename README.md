@@ -137,31 +137,61 @@ HandoffDocs/
 |-- study/
 `-- artifacts/
     `-- api-auth-investigation/
+        |-- history.md
         |-- reports/
         |-- test-scripts/
         |-- test-results/
         `-- misc/
 ```
 
+目录按需创建：只有真正写入文件时才建对应子目录，不预先铺空目录。
+
 `handoff.md` 是 full 模式的执行仪表盘，只存放 active、blocked、done、archived 等执行槽。详细执行上下文放在 `handoffs/<execution-slug>.md`。
 
-每个 full 任务 handoff 记录：
+### handoff 的三层结构
 
-- 可选 Task Binding：task record、work item、spec owner 和必读规范路径；
-- 任务目标、范围和成功标准；
-- 上下文面板（Context Panel）：这个槽位讨论什么、必读哪些文件、哪些内容默认不读；
-- 已查看的文件和已经运行过的命令；
-- 进度日志和关键决策；
-- 相关产物路径；
-- 压缩过的历史明细留档，以及当前 handoff 指向这些留档的索引；
-- 在受控 artifacts 目录之外创建的额外临时文件；
-- 当前执行状态、下一步和风险。
+handoff 的读者是下一个 Agent，但写手也是 Agent——人读不懂就没人能发现它记错了。所以结构按**密度**分层，而不是按读者分成两套文档：
+
+```markdown
+---
+slug / status / owner / updated / branch / task / work_item
+---
+# 标题
+
+> **State** 现在到哪了
+> **Next** 下一步
+> **Blocked** 阻塞，或 none
+
+## Scope     目标 / 不做 / 完成判据
+## Context   必读 / 可选 / 默认不读
+## Log       只记不可推导的事实
+```
+
+固定结构只有这些。`Task Binding`、`Artifacts`、`Study Notes`、`History`、`Extra Files` 都是可选段，**有内容才追加**，绝不预置空表。
+
+人读顶部三行就够；Agent 往下读 `Scope` 和 `Context` 拿到边界，读 `Log` 拿到走过的弯路。
+
+### Log 只收不可推导的事实
+
+能从代码、规范或 git 里读出来的，不写进 `Log`：改了哪些文件、跑了什么命令、实现了什么功能，这些复原成本极低，写进来只会制造过期风险。
+
+只写这些：失败的尝试和原因、被否决的方案和理由、仍未解决的阻塞、后续工作不该悄悄推翻的决策。
+
+### 记录会自动下线
+
+每条记录只在还能改变下一个 Agent 动作时才占用上下文。它在三种情况下死亡——**被取代、已落地、已解决**。「已落地」是最常见的一种：一个决策一旦写进代码，就变成可从仓库推导的事实，自动失去 handoff 席位。
+
+由此得到一个反直觉但有用的结果：**成功的决策会自然过期，失败的尝试永不过期**——因为后者在代码里没有任何痕迹，handoff 是它唯一的载体。失败尝试、被否决方案和未解决阻塞因此永不淘汰。
+
+淘汰在每次写 `Log` 时增量发生，不攒批：死记录被**移动**到 `artifacts/<execution-slug>/history.md`，不是删除，active handoff 里留一行 `History` 链接。等攒到某个体积再批量压缩，意味着在那之前的每次会话都在加载死上下文。
+
+如果淘汰之后仍有超过 10 条活记录，那不是长度问题而是**范围问题**：此时会提示该槽位应当拆分，而不是把真实决策压掉。
 
 普通实质工作完成后，Agent 仍会对活跃 handoff 做最小状态同步，但这不是 `/tracehandoff` 命令，也不会提示用户运行该命令。`/tracehandoff` 只处理用户明确要求的补记或同步。
 
 `/handoffprompt` 是只读、按需、终止型动作。只有明确输入命令或明确要求生成交接 prompt 时才会运行；输出只出现在当次回复，不写回 handoff，也不会被其他命令推荐。接收 Agent 在共享工作区里直接更新自己的 execution handoff，因此原会话不需要再运行 trace 来接收结果。
 
-当活跃 handoff 变得过长时，可以用 `/compacthandoff` 先生成一份历史明细 report，再把当前 handoff 精简成仍然可继续工作的上下文。这样历史修改细节不会丢失，但默认启动新 Agent 时也不会被旧日志拖慢。
+`/compacthandoff` 现在是兜底而非主力：增量淘汰才是常态的长度控制。它只处理两种情况——增量淘汰没压住的超长 handoff，以及需要迁移到当前结构的旧格式文件。如果一个 handoff 超长只是因为活记录确实多，它不会压缩，而是报告槽位范围过大。
 
 可以先看 [`examples/explore-output.md`](examples/explore-output.md) 理解探索输出，再看 [`examples/task-spec-internal/`](examples/task-spec-internal/) 和 [`examples/task-spec-external/`](examples/task-spec-external/) 对比内部规范与外部绑定。Light/full、压缩历史和手动 prompt 输出分别位于 [`examples/light-handoff/`](examples/light-handoff/)、[`examples/basic-handoff/`](examples/basic-handoff/)、[`examples/compact-history/`](examples/compact-history/) 和 [`examples/handoffprompt-output.md`](examples/handoffprompt-output.md)。
 

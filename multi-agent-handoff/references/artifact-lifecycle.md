@@ -8,7 +8,7 @@ Put temporary or process artifacts under `HandoffDocs/artifacts/<execution-slug>
 
 Do not put deliverable source code, permanent tests, formal specs, migration files, official docs, or intentionally committed scripts under `HandoffDocs/artifacts/`. Those belong in the normal project tree or the owning workflow's directory.
 
-Track every non-source or temporary file created outside `HandoffDocs/artifacts/<execution-slug>/` in `Extra File Index`, unless it is an expected artifact owned by another workflow. Include path, why it exists, candidate decision label, and cleanup status.
+Track every non-source or temporary file created outside `HandoffDocs/artifacts/<execution-slug>/` in `Extra Files`, unless it is an expected artifact owned by another workflow. Include path, why it exists, candidate decision label, and cleanup status.
 
 Treat old timestamped artifacts as potentially stale until verified against active handoff context, current source/config, or fresh checks. Treat artifacts as stale candidates when they are older than 24 hours, older than relevant source/config changes, unreferenced by the active handoff, under another slug, under `archive/`, or in an unknown folder. Report stale or orphan candidates instead of trusting them silently.
 
@@ -32,29 +32,65 @@ Use these paths for generated debugging or acceptance artifacts:
 - Test results: `HandoffDocs/artifacts/<execution-slug>/test-results/YYYYMMDD-HHMMSS-short-title.<ext>`
 - Other temporary outputs: `HandoffDocs/artifacts/<execution-slug>/misc/YYYYMMDD-HHMMSS-short-title.<ext>`
 
-If a temporary document, script, test output, report, screenshot, fixture, dump, or scratch config was created outside `HandoffDocs/artifacts/<execution-slug>/`, add it to the execution handoff's `Extra File Index`:
+If a temporary document, script, test output, report, screenshot, fixture, dump, or scratch config was created outside `HandoffDocs/artifacts/<execution-slug>/`, add it to the execution handoff's `Extra Files`:
 
 ```markdown
 | Path | Why It Exists | Decision Label | Cleanup Status |
 | --- | --- | --- | --- |
 ```
 
+Create each subdirectory only when writing a file into it. Never pre-create the full artifact tree; empty directories are the same defect as an empty section, and they make a slot look like it produced evidence it never produced.
+
 Prefer creating handoff-owned process artifacts directly under `HandoffDocs/artifacts/<execution-slug>/`. If a file already exists elsewhere, mark it as `move-candidate` before user confirmation. If a file should become part of the real project or belongs to another workflow's declared layout, mark it as `promote-candidate`, `keep`, or `external-owned` and explain why. Do not move, delete, or relocate files without explicit user confirmation.
+
+## Record Lifecycle
+
+A log record earns space in active context only while it still changes what the next agent will do. Evict it once it is dead.
+
+A record dies when it is superseded, landed, or resolved:
+
+- **Superseded** — a later record replaces its conclusion.
+- **Landed** — the decision now exists in code, configuration, or a spec, so it is derivable from the repository.
+- **Resolved** — the blocker is cleared or the open question is answered.
+
+`Landed` is the common case. A decision that ships stops earning a slot, because the repository now carries it. The practical consequence is that successful work expires on its own, while failure does not.
+
+Never evict failed attempts, rejected alternatives, or unresolved blockers. None of those leave a trace in the repository, so the handoff is the only place they can survive.
+
+These are state tests, not importance judgements. Ask whether a record is still true and still load-bearing, not whether it seems significant.
+
+### When To Evict
+
+Evict incrementally, on every write to `Log`. After appending a record, check whether the new record supersedes, lands, or resolves anything already present, and evict what it killed.
+
+Do not wait for a size threshold. A threshold means every session between thresholds loads dead context.
+
+### Where Evicted Records Go
+
+Append them to `HandoffDocs/artifacts/<execution-slug>/history.md`, oldest first, each with its eviction date and cause. Add or update one `History` row in the active handoff linking to that file.
+
+Move, never delete. Eviction removes a record from default context; it does not destroy it. Creating and appending to `history.md` requires no user confirmation. Deleting it does.
+
+### Scope Alarm
+
+If a slot still holds more than 10 live records after eviction, do not compact them. Report that the slot's scope is probably too large and that splitting it is the fix.
+
+A high count of genuinely live records is a scoping problem, not a length problem. Compacting real decisions to satisfy a budget destroys the only copy.
 
 ## Context Length Policy
 
-Use `/compacthandoff` when full active context is still useful but too long. Compaction creates a historical report first, then rewrites the active full handoff or index into shorter current context with links back to the report. It is not archival.
+Incremental eviction is the primary length control. `/compacthandoff` is the fallback for handoffs that eviction did not keep small enough, or that still use an older structure.
 
 Light handoffs should stay short. If one is too long, report that it is outside compaction scope and stop without turning compaction into another command flow.
 
 Target budgets:
 
 - `HandoffDocs/handoff.md`: 120 lines.
-- `HandoffDocs/handoffs/<execution-slug>.md`: 260 lines.
+- `HandoffDocs/handoffs/<execution-slug>.md`: 120 lines.
 - Active index `Done` and `Archived`: keep at most the most recent 20 rows each.
-- Active index `Compacted History`: keep at most the most recent 10 rows.
+- Active handoff `History`: keep at most the most recent 10 rows.
 
-Never remove unresolved blockers, risks, user-confirmation items, cleanup candidates, artifact paths, or `Extra File Index` rows during compaction. Do not read unrelated `archive/`, `study/`, or historical artifacts unless the active handoff or index links to a specific compact history report needed for the compaction.
+Never remove unresolved blockers, risks, user-confirmation items, cleanup candidates, artifact paths, or `Extra Files` rows during compaction. Do not read unrelated `archive/`, `study/`, or historical artifacts unless the active handoff or index links to a specific compact history report needed for the compaction.
 
 ## Archive Constraints
 

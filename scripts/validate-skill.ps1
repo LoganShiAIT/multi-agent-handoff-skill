@@ -28,6 +28,26 @@ function Require-NotContains($Text, $Pattern, $Label) {
     }
 }
 
+# Extract the first fenced code block that follows an exact heading line.
+function Get-FencedBlock($Text, $Heading) {
+    $found = $false
+    $inBlock = $false
+    $collected = New-Object System.Collections.Generic.List[string]
+    foreach ($line in ($Text -split "\r?\n")) {
+        if (-not $found) {
+            if ($line -eq $Heading) { $found = $true }
+            continue
+        }
+        if ($line -match '^```') {
+            if ($inBlock) { break }
+            $inBlock = $true
+            continue
+        }
+        if ($inBlock) { $collected.Add($line) }
+    }
+    return ($collected -join "`n")
+}
+
 Require-Path $SkillFile "SKILL.md"
 Require-Path $AgentFile "agents/openai.yaml"
 Require-Path $CommandsDir "commands directory"
@@ -161,6 +181,89 @@ if (Test-Path -LiteralPath $handoffFormatsPath) {
     $handoffFormatsText = Get-Content -Raw -Encoding UTF8 $handoffFormatsPath
     Require-NotContains $handoffFormatsText '(?im)^\s*-\s*(Handoff prompt|Prompt for the next agent):' "persistent prompt field in handoff formats"
     Require-Contains $handoffFormatsText '(?m)^## Task Binding$' "Task Binding template section"
+
+    # --- Handoff structure guards ---------------------------------------------
+    # The full handoff skeleton is exactly: frontmatter + title + human status
+    # block + Scope + Context + Log. Everything else is appended only when it
+    # has content.
+
+    $fullTemplate = Get-FencedBlock $handoffFormatsText "## Full Execution Handoff Template"
+    if ([string]::IsNullOrWhiteSpace($fullTemplate)) {
+        $Errors.Add("Missing full execution handoff template block")
+    }
+    else {
+        Require-Contains $fullTemplate '(?m)^slug:' "full template frontmatter slug"
+        Require-Contains $fullTemplate '(?m)^status:' "full template frontmatter status"
+        Require-Contains $fullTemplate '(?m)^updated:' "full template frontmatter updated"
+        Require-Contains $fullTemplate '(?m)^> \*\*' "full template human status block"
+        Require-Contains $fullTemplate '(?m)^## Scope$' "full template Scope section"
+        Require-Contains $fullTemplate '(?m)^## Context$' "full template Context section"
+        Require-Contains $fullTemplate '(?m)^## Log$' "full template Log section"
+        foreach ($legacySection in @(
+                "Metadata", "Mission", "Context Panel", "Context Packet", "Progress Log",
+                "Findings and Decisions", "Handoff Back", "Artifacts", "Study Notes",
+                "Compacted History", "Extra File Index", "Task Binding")) {
+            $legacyPattern = '(?m)^## ' + [regex]::Escape($legacySection) + '$'
+            $legacyLabel = "pre-seeded or legacy section '$legacySection' in full handoff template"
+            Require-NotContains $fullTemplate $legacyPattern $legacyLabel
+        }
+    }
+
+    $lightTemplate = Get-FencedBlock $handoffFormatsText "## Light Handoff Template"
+    if ([string]::IsNullOrWhiteSpace($lightTemplate)) {
+        $Errors.Add("Missing light handoff template block")
+    }
+    else {
+        Require-Contains $lightTemplate '(?m)^slug:' "light template frontmatter slug"
+        Require-Contains $lightTemplate '(?m)^> \*\*' "light template human status block"
+        Require-Contains $lightTemplate '(?m)^## Context$' "light template Context section"
+        Require-Contains $lightTemplate '(?m)^## Log$' "light template Log section"
+        foreach ($legacyLightSection in @("Intent", "Current Understanding", "Progress", "Next")) {
+            $legacyLightPattern = '(?m)^## ' + [regex]::Escape($legacyLightSection) + '$'
+            $legacyLightLabel = "legacy section '$legacyLightSection' in light handoff template"
+            Require-NotContains $lightTemplate $legacyLightPattern $legacyLightLabel
+        }
+    }
+
+    Require-Contains $handoffFormatsText '(?m)^## Optional Sections$' "optional sections block"
+    Require-Contains $handoffFormatsText 'only when it has content' "conditional section rule"
+    Require-Contains $handoffFormatsText 'cannot be derived from code, specs, or git' "non-derivable record rule"
+}
+
+# --- Record lifecycle guards --------------------------------------------------
+# Records are evicted by objective death criteria, incrementally on write, by
+# moving them out of active context rather than deleting them.
+
+$artifactLifecyclePath = Join-Path $ReferencesDir "artifact-lifecycle.md"
+if (Test-Path -LiteralPath $artifactLifecyclePath) {
+    $artifactLifecycleText = Get-Content -Raw -Encoding UTF8 $artifactLifecyclePath
+    Require-Contains $artifactLifecycleText '(?m)^## Record Lifecycle$' "record lifecycle section"
+    Require-Contains $artifactLifecycleText 'superseded, landed, or resolved' "record eviction criteria"
+    Require-Contains $artifactLifecycleText 'artifacts/<execution-slug>/history\.md' "evicted record destination"
+    Require-Contains $artifactLifecycleText 'Move, never delete' "eviction move-not-delete rule"
+    Require-Contains $artifactLifecycleText 'Never evict failed attempts, rejected alternatives, or unresolved blockers' "never-evict whitelist"
+    Require-Contains $artifactLifecycleText '10 live records' "slot scope alarm threshold"
+}
+
+foreach ($lifecycleCommand in @("inithandoff.md", "tracehandoff.md", "compacthandoff.md")) {
+    $lifecycleCommandPath = Join-Path $CommandsDir $lifecycleCommand
+    if (Test-Path -LiteralPath $lifecycleCommandPath) {
+        $lifecycleCommandText = Get-Content -Raw -Encoding UTF8 $lifecycleCommandPath
+        Require-Contains $lifecycleCommandText 'Record Lifecycle' "$lifecycleCommand record lifecycle step"
+    }
+}
+
+# Event-log fields must not survive anywhere that creates or updates handoffs.
+# compacthandoff.md is exempt: it must still name legacy sections to migrate them.
+foreach ($eventLogPath in @(
+        (Join-Path $ReferencesDir "handoff-formats.md"),
+        (Join-Path $CommandsDir "inithandoff.md"),
+        (Join-Path $CommandsDir "tracehandoff.md"))) {
+    if (Test-Path -LiteralPath $eventLogPath) {
+        $eventLogText = Get-Content -Raw -Encoding UTF8 $eventLogPath
+        $eventLogLabel = "event-log field in " + (Split-Path -Leaf $eventLogPath)
+        Require-NotContains $eventLogText '(?i)(Commands already run|Files already inspected|Context Packet|Progress Log)' $eventLogLabel
+    }
 }
 
 $normalHandoffs = @(

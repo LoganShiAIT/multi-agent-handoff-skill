@@ -54,6 +54,8 @@ Mere mention of another agent, a future session, handoff, or resumability may ac
 
 Keep routine minimal handoff maintenance separate from command routing. After meaningful implementation, investigation, failure, validation, blocker, or next-step changes, update the active handoff concisely without presenting that maintenance as `/tracehandoff`. Use `/tracehandoff` only for an explicit user request to synchronize or backfill progress.
 
+Routine maintenance is where most records are written, so it is also where they must be evicted. Refresh the status block, and append to `Log` only facts that cannot be derived from code, specs, or git: failed attempts, rejected alternatives, open blockers, and decisions later work must not reverse. Then drop records the new ones superseded, landed, or resolved. Never drop failed attempts, rejected alternatives, or unresolved blockers.
+
 Route selected actions as follows:
 
 - `/explorehandoff`: inspect whether work needs no state, task planning, a light handoff, or a full handoff. Read `commands/explorehandoff.md`.
@@ -85,8 +87,8 @@ Never treat `delete-candidate` as permission to delete.
 Detailed rules are lazy-loaded by command:
 
 - `references/write-safety.md`: filesystem operations, confirmation gates, git/privacy, gentle labels.
-- `references/handoff-formats.md`: light, full, task-binding, index, and directory templates.
+- `references/handoff-formats.md`: light, full, optional-section, index, and directory templates.
 - `references/task-specs.md`: external-first source selection, task templates, readiness, and execution bindings.
-- `references/artifact-lifecycle.md`: artifact placement, stale/orphan handling, compaction, archive constraints.
+- `references/artifact-lifecycle.md`: record lifecycle and eviction, artifact placement, stale/orphan handling, compaction, archive constraints.
 
 Only read a reference when the selected command requires it.

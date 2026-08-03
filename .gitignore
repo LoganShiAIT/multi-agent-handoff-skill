@@ -1,5 +1,7 @@
 Logan的文档/
 
+# This repo's own working handoff state, kept local like Logan的文档/
+HandoffDocs/
+
 # Cloud-sync conflict copies ("SKILL 2.md", "handoff-formats 3.md", ...)
 * [0-9].md
-

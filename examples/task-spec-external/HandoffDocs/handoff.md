@@ -1,9 +1,9 @@
 # Handoff Index
 
 ## Active
-| Slug | Owner | Status | Scope | Next Action | Updated |
-| --- | --- | --- | --- | --- | --- |
-| add-profile-filters--w-01 | Codex session A | in-progress | Execute OpenSpec W-01 | Add focused acceptance test | 2026-07-25 11:15 CST |
+| Slug | Owner | Status | Next Action | Updated |
+| --- | --- | --- | --- | --- |
+| [add-profile-filters--w-01](handoffs/add-profile-filters--w-01.md) | Codex session A | in-progress | Add focused acceptance test | 2026-07-25 |
 
 ## Blocked
 | Slug | Owner | Blocker | Needed |
