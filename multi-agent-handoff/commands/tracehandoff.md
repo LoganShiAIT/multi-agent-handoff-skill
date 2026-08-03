@@ -10,7 +10,7 @@ Use the `multi-agent-handoff` skill.
 
 Read `references/write-safety.md` before updating any handoff.
 
-For full handoffs, read `references/artifact-lifecycle.md` before recording artifacts, cleanup labels, or index changes. Read `references/task-specs.md` only when the selected handoff has a Task Binding.
+Read `references/artifact-lifecycle.md` before appending to `Log`; it defines `Record Lifecycle`, which governs what may be written and what must be evicted. Read `references/task-specs.md` only when the selected handoff has a Task Binding.
 
 ## Explicit Sync Boundary
 
@@ -22,21 +22,25 @@ Workflow:
 
 1. Resolve the handoff and mode from explicit arguments, current context, and existing files. If ambiguous, ask which handoff to update.
 2. Read the selected light file, or read the full index followed by the selected full execution handoff.
-3. Append only requested facts:
-   - What changed or was learned
-   - Files touched or inspected
-   - Verification run or skipped
-   - Current blockers
-   - Next recommended step
-4. For light, update only `Progress` and `Next`.
-5. For full:
+3. Append to `Log` only requested facts that cannot be derived from code, specs, or git:
+   - What was decided, and what that decision rules out
+   - What was attempted and failed, with the reason
+   - Which alternative was rejected, with the reason
+   - Which blockers are still open
+   Do not append commands executed, files inspected, or work that already landed in the repository. Those are recoverable without the handoff.
+4. Evict under `Record Lifecycle`: after appending, remove records the new ones superseded, landed, or resolved, and append them to `HandoffDocs/artifacts/<execution-slug>/history.md` with their eviction date and cause. Never evict failed attempts, rejected alternatives, or unresolved blockers.
+5. If more than 10 live records remain after eviction, do not compact them. Report that the slot's scope is probably too large.
+6. Refresh the status block and frontmatter `updated` in the same edit.
+7. For light, update only the status block and `Log`.
+8. For full:
    - Record handoff-owned artifacts under the execution slug.
-   - Refresh Context Panel only when the execution reading boundary changed.
+   - Refresh `Context` only when the execution reading boundary changed.
    - Preserve Task Binding and verify its paths if the update depends on them.
    - Do not edit task specs, external spec artifacts, or task readiness.
-   - If execution reveals a spec change, record that need as a finding or blocker.
+   - If execution reveals a spec change, record that need as a `Log` record or blocker.
    - Update the owned index row only when operational status changed.
-6. Treat legacy stored prompt fields as inert: do not read, refresh, copy, or delete them.
-7. Do not rewrite the whole handoff unless malformed.
+   - Add an optional section only when it now has content.
+9. Treat legacy stored prompt fields as inert: do not read, refresh, copy, or delete them.
+10. Do not rewrite the whole handoff unless malformed.
 
 Report the synchronized facts, files updated, verification, and blockers. End after reporting.

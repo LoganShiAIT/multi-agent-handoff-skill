@@ -37,6 +37,39 @@ require_not_grep() {
   fi
 }
 
+require_text_grep() {
+  local text="$1"
+  local pattern="$2"
+  local label="$3"
+  if ! printf '%s\n' "$text" | grep -Eq -- "$pattern"; then
+    errors+=("Missing $label")
+  fi
+}
+
+require_text_not_grep() {
+  local text="$1"
+  local pattern="$2"
+  local label="$3"
+  if printf '%s\n' "$text" | grep -Eq -- "$pattern"; then
+    errors+=("Found forbidden $label")
+  fi
+}
+
+# Extract the first fenced code block that follows an exact heading line.
+extract_fenced_block() {
+  local file="$1"
+  local heading="$2"
+  awk -v heading="$heading" '
+    $0 == heading { found = 1; next }
+    found && /^```/ {
+      if (inblock) { exit }
+      inblock = 1
+      next
+    }
+    found && inblock { print }
+  ' "$file"
+}
+
 require_path "$skill_file" "SKILL.md"
 require_path "$agent_file" "agents/openai.yaml"
 require_path "$commands_dir" "commands directory"
@@ -161,6 +194,81 @@ if [ -f "$references_dir/handoff-formats.md" ]; then
   require_not_grep '^[[:space:]]*-[[:space:]]*(Handoff prompt|Prompt for the next agent):' "$references_dir/handoff-formats.md" "persistent prompt field in handoff formats"
   require_grep '^## Task Binding$' "$references_dir/handoff-formats.md" "Task Binding template section"
 fi
+
+# --- Handoff structure guards -------------------------------------------------
+# The full handoff skeleton is exactly: frontmatter + title + human status block
+# + Scope + Context + Log. Everything else is appended only when it has content.
+
+if [ -f "$references_dir/handoff-formats.md" ]; then
+  full_template="$(extract_fenced_block "$references_dir/handoff-formats.md" "## Full Execution Handoff Template")"
+  if [ -z "$full_template" ]; then
+    errors+=("Missing full execution handoff template block")
+  else
+    require_text_grep "$full_template" '^slug:' "full template frontmatter slug"
+    require_text_grep "$full_template" '^status:' "full template frontmatter status"
+    require_text_grep "$full_template" '^updated:' "full template frontmatter updated"
+    require_text_grep "$full_template" '^> \*\*' "full template human status block"
+    require_text_grep "$full_template" '^## Scope$' "full template Scope section"
+    require_text_grep "$full_template" '^## Context$' "full template Context section"
+    require_text_grep "$full_template" '^## Log$' "full template Log section"
+    for legacy_section in \
+      'Metadata' 'Mission' 'Context Panel' 'Context Packet' 'Progress Log' \
+      'Findings and Decisions' 'Handoff Back' 'Artifacts' 'Study Notes' \
+      'Compacted History' 'Extra File Index' 'Task Binding'; do
+      require_text_not_grep "$full_template" "^## ${legacy_section}\$" \
+        "pre-seeded or legacy section '${legacy_section}' in full handoff template"
+    done
+  fi
+
+  light_template="$(extract_fenced_block "$references_dir/handoff-formats.md" "## Light Handoff Template")"
+  if [ -z "$light_template" ]; then
+    errors+=("Missing light handoff template block")
+  else
+    require_text_grep "$light_template" '^slug:' "light template frontmatter slug"
+    require_text_grep "$light_template" '^> \*\*' "light template human status block"
+    require_text_grep "$light_template" '^## Context$' "light template Context section"
+    require_text_grep "$light_template" '^## Log$' "light template Log section"
+    for legacy_light_section in 'Intent' 'Current Understanding' 'Progress' 'Next'; do
+      require_text_not_grep "$light_template" "^## ${legacy_light_section}\$" \
+        "legacy section '${legacy_light_section}' in light handoff template"
+    done
+  fi
+
+  require_grep '^## Optional Sections$' "$references_dir/handoff-formats.md" "optional sections block"
+  require_grep 'only when it has content' "$references_dir/handoff-formats.md" "conditional section rule"
+  require_grep 'cannot be derived from code, specs, or git' "$references_dir/handoff-formats.md" "non-derivable record rule"
+fi
+
+# --- Record lifecycle guards --------------------------------------------------
+# Records are evicted by objective death criteria, incrementally on write,
+# by moving them out of active context rather than deleting them.
+
+if [ -f "$references_dir/artifact-lifecycle.md" ]; then
+  require_grep '^## Record Lifecycle$' "$references_dir/artifact-lifecycle.md" "record lifecycle section"
+  require_grep 'superseded, landed, or resolved' "$references_dir/artifact-lifecycle.md" "record eviction criteria"
+  require_grep 'artifacts/<execution-slug>/history\.md' "$references_dir/artifact-lifecycle.md" "evicted record destination"
+  require_grep 'Move, never delete' "$references_dir/artifact-lifecycle.md" "eviction move-not-delete rule"
+  require_grep 'Never evict failed attempts, rejected alternatives, or unresolved blockers' "$references_dir/artifact-lifecycle.md" "never-evict whitelist"
+  require_grep '10 live records' "$references_dir/artifact-lifecycle.md" "slot scope alarm threshold"
+fi
+
+for lifecycle_command in inithandoff.md tracehandoff.md compacthandoff.md; do
+  if [ -f "$commands_dir/$lifecycle_command" ]; then
+    require_grep 'Record Lifecycle' "$commands_dir/$lifecycle_command" "$lifecycle_command record lifecycle step"
+  fi
+done
+
+# Event-log fields must not survive anywhere that creates or updates handoffs.
+# compacthandoff.md is exempt: it must still name legacy sections to migrate them.
+for event_log_file in \
+  "$references_dir/handoff-formats.md" \
+  "$commands_dir/inithandoff.md" \
+  "$commands_dir/tracehandoff.md"; do
+  if [ -f "$event_log_file" ]; then
+    require_not_grep '(Commands already run|Files already inspected|Context Packet|Progress Log)' \
+      "$event_log_file" "event-log field in $(basename "$event_log_file")"
+  fi
+done
 
 for normal_handoff in \
   "$repo_root/examples/basic-handoff/HandoffDocs/handoffs/api-auth-investigation.md" \

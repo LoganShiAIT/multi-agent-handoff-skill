@@ -41,10 +41,11 @@ Read:
 - `<required-spec-paths>`
 - `<execution-handoff>`
 
-Use the Task Binding and Context Panel as the reading boundary. Execute only the bound work item. Do not edit task specs or other handoff slots unless the user explicitly expands scope.
+Use the Task Binding and `Context` section as the reading boundary. Execute only the bound work item. Do not edit task specs or other handoff slots unless the user explicitly expands scope.
 
 Before returning:
-- Update `<execution-handoff>` with progress, verification, blockers, and next step.
+- Refresh the status block and frontmatter `updated` in `<execution-handoff>`.
+- Append to `Log` only what cannot be derived from code, specs, or git: failed attempts, rejected alternatives, open blockers, decisions later work must not reverse. Evict records that the new ones superseded, landed, or resolved.
 - Update only its owned row in `HandoffDocs/handoff.md` when operational status changed.
 - Put temporary execution artifacts under the bound artifact directory.
 
@@ -60,12 +61,12 @@ Unbound template:
 ```markdown
 You are working on `<handoff-slug>`.
 
-Read `<handoff-path>` and follow its Mission and Context Panel.
+Read `<handoff-path>` and follow its `Scope` and `Context` sections.
 
 Scope:
 - <compact current scope>
 
-Before returning, update the same handoff with progress, verification, blockers, and next step.
+Before returning, refresh the same handoff's status block and append to `Log` only what cannot be derived from code, specs, or git.
 
 Return:
 - What changed or was found

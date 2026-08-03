@@ -1,19 +1,18 @@
+---
+slug: api-auth-investigation
+status: in-progress
+updated: 2026-07-02
+---
+
 # API Auth Investigation
 
-## Intent
-- User request: "Check why API auth sometimes returns 401 after token refresh."
-- Goal: Preserve enough context for one focused follow-up session.
-- Scope: Inspect API client retry behavior only; do not manage project-wide handoff state.
+> **State** Likely cause is stale retry headers after token refresh.
+> **Next** Add a focused regression test for retry headers after refresh.
+> **Blocked** none
 
-## Current Understanding
-- Key facts: The retry path runs after the first 401, but the retry appears to reuse the original Authorization header.
-- Files inspected: `src/auth/client.ts`, `tests/auth-client.test.ts`
-- Commands run: `npm test -- auth-client`
+## Context
+- Must read: `src/auth/client.ts`, `tests/auth-client.test.ts`
+- Do not read: project-wide handoff state, unrelated source folders
 
-## Progress
-- 2026-07-02 10:12: Narrowed the likely issue to stale retry headers after token refresh.
-
-## Next
-- Recommended next step: Add a focused regression test for retry headers after refresh.
-- Verification: Re-run `npm test -- auth-client`.
-- Risks / blockers: No blocker; keep the task scoped to API client retry behavior.
+## Log
+- 2026-07-02 The retry after a 401 reuses the original Authorization header instead of the refreshed one.

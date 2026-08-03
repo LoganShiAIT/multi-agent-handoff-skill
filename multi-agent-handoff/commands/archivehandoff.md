@@ -26,7 +26,8 @@ Workflow:
 3. Read `HandoffDocs/handoffs/<execution-slug>.md`.
 4. Run a pre-archive audit. Do not move, copy, delete, or relocate files during the audit:
    - Preserve any `Task Binding` and identify the bound task record.
-   - Review `Extra File Index`.
+   - Review `Extra Files` when the handoff has that section.
+   - Read `HandoffDocs/artifacts/<execution-slug>/history.md` when it exists; evicted records may name cleanup obligations that active context no longer shows.
    - Check `HandoffDocs/artifacts/<execution-slug>/` for unindexed reports, scripts, results, dumps, screenshots, and misc files.
    - Check likely scattered locations such as project root, `tmp/`, `temp/`, `debug/`, `reports/`, `screenshots/`, and recently modified files with timestamped names.
    - Exclude expected artifacts owned by other skills, spec systems, docs workflows, test frameworks, or project-defined output directories.

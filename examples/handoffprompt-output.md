@@ -12,10 +12,11 @@ Read:
 - `openspec/changes/add-profile-filters/tasks.md`
 - `HandoffDocs/handoffs/add-profile-filters--w-01.md`
 
-Use the Task Binding and Context Panel as the reading boundary. Execute only W-01. Do not edit task specs or other handoff slots unless the user explicitly expands scope.
+Use the Task Binding and `Context` section as the reading boundary. Execute only W-01. Do not edit task specs or other handoff slots unless the user explicitly expands scope.
 
 Before returning:
-- Update `HandoffDocs/handoffs/add-profile-filters--w-01.md` with progress, verification, blockers, and next step.
+- Refresh the status block and frontmatter `updated` in `HandoffDocs/handoffs/add-profile-filters--w-01.md`.
+- Append to `Log` only what cannot be derived from code, specs, or git: failed attempts, rejected alternatives, open blockers, decisions later work must not reverse. Evict records the new ones superseded, landed, or resolved.
 - Update only its owned row in `HandoffDocs/handoff.md` when operational status changed.
 - Put temporary execution artifacts under `HandoffDocs/artifacts/add-profile-filters--w-01/`.
 

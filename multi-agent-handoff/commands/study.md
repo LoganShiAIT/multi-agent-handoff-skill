@@ -31,7 +31,7 @@ Workflow:
    - Handoff-linked notes: `HandoffDocs/study/<execution-slug>/`.
    - Standalone notes: use the project/user personal notes root if one is defined; otherwise use `HandoffDocs/study/<study-scope>/`.
 7. Create `YYYYMMDD-HHMMSS-short-title.html` in the chosen output folder.
-8. If handoff-linked, add the note path to the execution handoff's `Study Notes` table. If standalone, just report the note path.
+8. If handoff-linked, add the note path to the execution handoff's `Study Notes` table, creating that optional section if the handoff does not have one yet. If standalone, just report the note path.
 
 HTML note requirements:
 

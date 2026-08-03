@@ -13,7 +13,7 @@ For every file operation:
 - Write new execution handoffs and reports to the final intended path only after the parent directory exists.
 - Before editing `HandoffDocs/handoff.md`, re-read it, update only the relevant row or compact section, and preserve unrelated rows exactly.
 - Before rewriting an active handoff during compaction, create the compact-history report first. If report creation fails, stop and leave the active handoff unchanged.
-- Put process artifacts under timestamped paths in `HandoffDocs/artifacts/<execution-slug>/`; if temporary files must exist elsewhere, record them in `Extra File Index`.
+- Put process artifacts under timestamped paths in `HandoffDocs/artifacts/<execution-slug>/`; if temporary files must exist elsewhere, record them in `Extra Files`.
 - Treat archive, cleanup, move, delete, relocate, git ignore, stage, commit, and push actions as confirmation-gated. Propose them with gentle labels before acting.
 - Do not delete or move files outside `HandoffDocs/artifacts/<execution-slug>/` without explicit user confirmation, even if they look temporary.
 - If a local merge, overwrite, archive, or cleanup is not obviously safe, stop after recording the issue in the execution handoff and ask the user or coordinator to reconcile.
