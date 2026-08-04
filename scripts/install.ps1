@@ -1,5 +1,5 @@
 param(
-    [string]$CodexSkillsDir = $(if ($env:CODEX_HOME) { Join-Path $env:CODEX_HOME "skills" } else { Join-Path $HOME ".codex\skills" }),
+    [string]$CodexSkillsDir = "",
     [string]$ClaudeCommandsDir = "",
     [ValidateSet("copy", "link")]
     [string]$Mode = "copy",
@@ -12,11 +12,36 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
 $SkillSource = Join-Path $RepoRoot "multi-agent-handoff"
 $CommandSource = Join-Path $SkillSource "commands"
+
+function Resolve-CodexSkillsDir {
+    $CurrentUserSkillsDir = Join-Path $HOME ".agents\skills"
+    $LegacyCodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME ".codex" }
+    $LegacySkillsDir = Join-Path $LegacyCodexHome "skills"
+
+    # Prefer the current documented user location when it already exists, but
+    # preserve installations that still use the legacy Codex state directory.
+    if (Test-Path -LiteralPath $CurrentUserSkillsDir -PathType Container) {
+        return $CurrentUserSkillsDir
+    }
+    if (Test-Path -LiteralPath $LegacySkillsDir -PathType Container) {
+        return $LegacySkillsDir
+    }
+
+    # New installations use the current documented location.
+    return $CurrentUserSkillsDir
+}
+
+if ([string]::IsNullOrWhiteSpace($CodexSkillsDir)) {
+    $CodexSkillsDir = Resolve-CodexSkillsDir
+}
+
 $SkillTarget = Join-Path $CodexSkillsDir "multi-agent-handoff"
 
 function Say($Message) {
     Write-Host "[multi-agent-handoff] $Message"
 }
+
+Say "using Codex skills directory: $CodexSkillsDir"
 
 function Ensure-Dir($Path) {
     if ($DryRun) {

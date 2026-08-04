@@ -5,7 +5,7 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
 skill_source="$repo_root/multi-agent-handoff"
 command_source="$skill_source/commands"
-codex_skills_dir="${CODEX_HOME:-$HOME/.codex}/skills"
+codex_skills_dir=""
 claude_commands_dir=""
 mode="copy"
 dry_run=0
@@ -19,7 +19,7 @@ usage() {
 Usage: scripts/install.sh [options]
 
 Options:
-  --codex-dir DIR             Codex skills directory. Default: ${CODEX_HOME:-$HOME/.codex}/skills
+  --codex-dir DIR             Codex skills directory. Overrides automatic detection.
   --claude-commands-dir DIR   Sync command markdown files to a Claude commands directory, e.g. .claude/commands
   --mode copy|link            Install mode. Default: copy
   --dry-run                   Print actions without changing files
@@ -62,6 +62,23 @@ if [ "$mode" != "copy" ] && [ "$mode" != "link" ]; then
   exit 2
 fi
 
+if [ -z "$codex_skills_dir" ]; then
+  current_user_skills_dir="$HOME/.agents/skills"
+  legacy_codex_home="${CODEX_HOME:-$HOME/.codex}"
+  legacy_skills_dir="$legacy_codex_home/skills"
+
+  # Prefer the current documented user location when it already exists, but
+  # preserve installations that still use the legacy Codex state directory.
+  if [ -d "$current_user_skills_dir" ]; then
+    codex_skills_dir="$current_user_skills_dir"
+  elif [ -d "$legacy_skills_dir" ]; then
+    codex_skills_dir="$legacy_skills_dir"
+  else
+    # New installations use the current documented location.
+    codex_skills_dir="$current_user_skills_dir"
+  fi
+fi
+
 if [ ! -d "$skill_source" ]; then
   printf 'Skill source not found: %s\n' "$skill_source" >&2
   exit 1
@@ -97,6 +114,7 @@ install_path() {
 }
 
 skill_target="$codex_skills_dir/multi-agent-handoff"
+say "using Codex skills directory: $codex_skills_dir"
 install_path "$skill_source" "$skill_target" 1
 if [ "$dry_run" -eq 1 ]; then
   say "would finish skill install to $skill_target"
