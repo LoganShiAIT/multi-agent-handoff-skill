@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-skill_dir="$repo_root/multi-agent-handoff"
+skill_dir="$repo_root/handit"
 skill_file="$skill_dir/SKILL.md"
 agent_file="$skill_dir/agents/openai.yaml"
 commands_dir="$skill_dir/commands"
@@ -81,7 +81,7 @@ require_path "$references_dir/task-specs.md" "task spec reference"
 declared_commands=()
 transition_command_pattern='explorehandoff|inittask|updatetask|inithandoff|tracehandoff|compacthandoff|handoffprompt|archivehandoff|study'
 if [ -f "$skill_file" ]; then
-  require_grep '^name:[[:space:]]*multi-agent-handoff[[:space:]]*$' "$skill_file" "SKILL.md name frontmatter"
+  require_grep '^name:[[:space:]]*handit[[:space:]]*$' "$skill_file" "SKILL.md name frontmatter"
   require_grep '^description:[[:space:]]*.+' "$skill_file" "SKILL.md description frontmatter"
   require_grep '^## Lazy Command Routing$' "$skill_file" "Lazy Command Routing"
   require_grep 'routine minimal handoff maintenance separate from command routing' "$skill_file" "routine maintenance boundary"

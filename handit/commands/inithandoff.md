@@ -4,7 +4,7 @@ argument-hint: "[--light | --full | --from-task <task-slug> --work-item <id>] [t
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-Use the `multi-agent-handoff` skill.
+Use the `handit` skill.
 
 ## Required References
 

@@ -4,7 +4,7 @@ argument-hint: "<task-slug> [task description]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-Use the `multi-agent-handoff` skill.
+Use the `handit` skill.
 
 ## Required References
 

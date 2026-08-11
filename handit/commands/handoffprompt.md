@@ -4,7 +4,7 @@ argument-hint: "[--light | --full] <handoff-slug>"
 allowed-tools: Read, Glob, Grep
 ---
 
-Use the `multi-agent-handoff` skill.
+Use the `handit` skill.
 
 ## Required References
 

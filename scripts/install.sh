@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-skill_source="$repo_root/multi-agent-handoff"
+skill_source="$repo_root/handit"
 command_source="$skill_source/commands"
 codex_skills_dir="${CODEX_HOME:-$HOME/.codex}/skills"
 claude_commands_dir=""
@@ -11,7 +11,7 @@ mode="copy"
 dry_run=0
 
 say() {
-  printf '[multi-agent-handoff] %s\n' "$1"
+  printf '[handit] %s\n' "$1"
 }
 
 usage() {
@@ -96,7 +96,7 @@ install_path() {
   fi
 }
 
-skill_target="$codex_skills_dir/multi-agent-handoff"
+skill_target="$codex_skills_dir/handit"
 install_path "$skill_source" "$skill_target" 1
 if [ "$dry_run" -eq 1 ]; then
   say "would finish skill install to $skill_target"

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Multi-Agent Handoff"
-  short_description: "Bind task specs and coordinate resumable execution"
-  default_prompt: "Use $multi-agent-handoff to bind task specs and coordinate resumable execution context."

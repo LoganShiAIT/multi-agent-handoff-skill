@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="Multi-Agent Handoff 产品横幅" width="100%">
+  <img src="assets/hero.svg" alt="Handit 产品横幅" width="100%">
 </p>
 
-<h1 align="center">Multi-Agent Handoff</h1>
+<h1 align="center">Handit</h1>
 
 <p align="center">
   面向 Claude Code、Codex 和手动启动的 Agent 会话的项目级交接协议。
@@ -30,7 +30,7 @@
 
 真实的 Agent 工作很少只有一条干净的会话线。你可能让一个会话排查测试失败，让另一个会话整理迁移方案，再让第三个会话准备交给下一位 Agent 的提示词。所有内容都塞进一个巨大的 `HANDOFF.md`，很快就会变成多个会话共同编辑的上下文泥潭。
 
-`multi-agent-handoff` 用一个紧凑索引，加上每个任务一份独立 handoff 文件，来管理手动多 Agent 协作：
+`handit` 用一个紧凑索引，加上每个任务一份独立 handoff 文件，来管理手动多 Agent 协作：
 
 - task spec 负责初始化讨论、规范和工作项，execution handoff 只负责执行现场；
 - 优先绑定 OpenSpec、OPSX 或项目官方 spec，不复制外部规范；
@@ -83,7 +83,7 @@ Claude Code 的 slash command 需要同步到 Claude command 目录。项目级�
 bash scripts/install.sh --claude-commands-dir ../your-project/.claude/commands
 ```
 
-对于不能自动加载 skill 的工具，可以让 Agent 手动读取 [`multi-agent-handoff/SKILL.md`](multi-agent-handoff/SKILL.md)。
+对于不能自动加载 skill 的工具，可以让 Agent 手动读取 [`handit/SKILL.md`](handit/SKILL.md)。
 
 ## 验证
 
@@ -259,7 +259,7 @@ Task spec 与 full handoff 的所有权规则很简单：
 |   |-- task-spec-external/
 |   |-- task-spec-internal/
 |   `-- handoffprompt-output.md
-|-- multi-agent-handoff/
+|-- handit/
 |   |-- SKILL.md
 |   |-- agents/
 |   |   `-- openai.yaml
@@ -300,4 +300,4 @@ Task spec 与 full handoff 的所有权规则很简单：
 
 本项目采用 [MIT License](LICENSE)。
 
-选择 MIT 的原因很直接：`multi-agent-handoff` 是一个可复用的 agent skill/template，目标是方便个人、团队和商业项目低摩擦复制、改造、分发和二次集成。MIT 足够简洁，也不会给使用方引入额外的复杂合规负担。
+选择 MIT 的原因很直接：`handit` 是一个可复用的 agent skill/template，目标是方便个人、团队和商业项目低摩擦复制、改造、分发和二次集成。MIT 足够简洁，也不会给使用方引入额外的复杂合规负担。

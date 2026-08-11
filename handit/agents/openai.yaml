@@ -1,0 +1,4 @@
+interface:
+  display_name: "Handit"
+  short_description: "Bind task specs and coordinate resumable execution"
+  default_prompt: "Use $handit to bind task specs and coordinate resumable execution context."

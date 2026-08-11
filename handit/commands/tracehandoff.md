@@ -4,7 +4,7 @@ argument-hint: "[--light | --full] [handoff-slug or update notes]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
-Use the `multi-agent-handoff` skill.
+Use the `handit` skill.
 
 ## Required References
 

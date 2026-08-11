@@ -4,7 +4,7 @@ argument-hint: "[task/topic/question]"
 allowed-tools: Read, Glob, Grep, Bash(git status:*), Bash(git log:*), Bash(ls:*)
 ---
 
-Use the `multi-agent-handoff` skill.
+Use the `handit` skill.
 
 ## Required References
 

@@ -10,12 +10,12 @@ $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
-$SkillSource = Join-Path $RepoRoot "multi-agent-handoff"
+$SkillSource = Join-Path $RepoRoot "handit"
 $CommandSource = Join-Path $SkillSource "commands"
-$SkillTarget = Join-Path $CodexSkillsDir "multi-agent-handoff"
+$SkillTarget = Join-Path $CodexSkillsDir "handit"
 
 function Say($Message) {
-    Write-Host "[multi-agent-handoff] $Message"
+    Write-Host "[handit] $Message"
 }
 
 function Ensure-Dir($Path) {

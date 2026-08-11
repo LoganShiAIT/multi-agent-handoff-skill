@@ -1,9 +1,9 @@
 ---
-name: multi-agent-handoff
+name: handit
 description: Use for external-first task-spec planning and resumable project handoff coordination across Claude Code, Codex, or other agent sessions. Trigger when the user asks to initialize or update a task specification, bind OpenSpec/OPSX/project-owned specs to execution work, preserve project continuity, explicitly sync handoff progress, compact or archive handoff context, or create a study note. Generate a transfer prompt only when the user explicitly invokes `/handoffprompt` or clearly asks to generate or prepare a prompt for another agent/session; never infer prompt generation from a mere mention of future work, another agent, or resumability.
 ---
 
-# Multi-Agent Handoff
+# Handit
 
 ## Purpose
 

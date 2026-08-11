@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
-$SkillDir = Join-Path $RepoRoot "multi-agent-handoff"
+$SkillDir = Join-Path $RepoRoot "handit"
 $SkillFile = Join-Path $SkillDir "SKILL.md"
 $AgentFile = Join-Path $SkillDir "agents\openai.yaml"
 $CommandsDir = Join-Path $SkillDir "commands"
@@ -60,7 +60,7 @@ if (Test-Path -LiteralPath $SkillFile) {
     $skillItem = Get-Item -LiteralPath $SkillFile
     $skillText = Get-Content -Raw -Encoding UTF8 $SkillFile
 
-    Require-Contains $skillText '(?ms)^---\s*\r?\nname:\s*multi-agent-handoff\s*\r?\ndescription:\s*.+' "required SKILL.md frontmatter"
+    Require-Contains $skillText '(?ms)^---\s*\r?\nname:\s*handit\s*\r?\ndescription:\s*.+' "required SKILL.md frontmatter"
     Require-Contains $skillText '(?m)^## Lazy Command Routing$' "Lazy Command Routing"
     Require-Contains $skillText 'routine minimal handoff maintenance separate from command routing' "routine maintenance boundary"
     Require-NotContains $skillText '(?i)After a handoff-related action.*suggest' "global post-command suggestion rule"
@@ -117,7 +117,7 @@ if (Test-Path -LiteralPath $ReadmeFile) {
     $readmeText = Get-Content -Raw -Encoding UTF8 $ReadmeFile
     Require-Contains $readmeText '/inittask' "README inittask command"
     Require-Contains $readmeText '/updatetask' "README updatetask command"
-    Require-Contains $readmeText 'external-first|外部规范优先' "README external-first policy"
+    Require-Contains $readmeText 'external-first|OpenSpec.*OPSX' "README external-first policy"
 }
 
 if (Test-Path -LiteralPath $AgentFile) {
