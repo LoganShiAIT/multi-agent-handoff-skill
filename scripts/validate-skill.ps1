@@ -199,6 +199,7 @@ if (Test-Path -LiteralPath $handoffFormatsPath) {
         Require-Contains $fullTemplate '(?m)^## Scope$' "full template Scope section"
         Require-Contains $fullTemplate '(?m)^## Context$' "full template Context section"
         Require-Contains $fullTemplate '(?m)^## Log$' "full template Log section"
+        Require-Contains $fullTemplate '(?m)^- \[R-[0-9]+ (failed|rejected|blocker|decision)\] ' "full template record ID and kind"
         foreach ($legacySection in @(
                 "Metadata", "Mission", "Context Panel", "Context Packet", "Progress Log",
                 "Findings and Decisions", "Handoff Back", "Artifacts", "Study Notes",
@@ -218,6 +219,7 @@ if (Test-Path -LiteralPath $handoffFormatsPath) {
         Require-Contains $lightTemplate '(?m)^> \*\*' "light template human status block"
         Require-Contains $lightTemplate '(?m)^## Context$' "light template Context section"
         Require-Contains $lightTemplate '(?m)^## Log$' "light template Log section"
+        Require-Contains $lightTemplate '(?m)^- \[R-[0-9]+ (failed|rejected|blocker|decision)\] ' "light template record ID and kind"
         foreach ($legacyLightSection in @("Intent", "Current Understanding", "Progress", "Next")) {
             $legacyLightPattern = '(?m)^## ' + [regex]::Escape($legacyLightSection) + '$'
             $legacyLightLabel = "legacy section '$legacyLightSection' in light handoff template"
@@ -228,6 +230,8 @@ if (Test-Path -LiteralPath $handoffFormatsPath) {
     Require-Contains $handoffFormatsText '(?m)^## Optional Sections$' "optional sections block"
     Require-Contains $handoffFormatsText 'only when it has content' "conditional section rule"
     Require-Contains $handoffFormatsText 'cannot be derived from code, specs, or git' "non-derivable record rule"
+    Require-Contains $handoffFormatsText 'are never reused, including after eviction' "record ID reuse rule"
+    Require-Contains $handoffFormatsText '(?m)^### Rows Are Pointers$' "index row pointer rule"
 }
 
 # --- Record lifecycle guards --------------------------------------------------
@@ -243,6 +247,10 @@ if (Test-Path -LiteralPath $artifactLifecyclePath) {
     Require-Contains $artifactLifecycleText 'Move, never delete' "eviction move-not-delete rule"
     Require-Contains $artifactLifecycleText 'Never evict failed attempts, rejected alternatives, or unresolved blockers' "never-evict whitelist"
     Require-Contains $artifactLifecycleText '10 live records' "slot scope alarm threshold"
+    Require-Contains $artifactLifecycleText '(?m)^\| `decision` \| superseded, or landed' "decision record death causes"
+    Require-Contains $artifactLifecycleText '(?m)^\| `failed` \| never \|$' "failed record permanence"
+    Require-Contains $artifactLifecycleText '(?m)^\| `rejected` \| never \|$' "rejected record permanence"
+    Require-Contains $artifactLifecycleText 'Retire the ID with the record' "record ID retirement rule"
 }
 
 foreach ($lifecycleCommand in @("inithandoff.md", "tracehandoff.md", "compacthandoff.md")) {
@@ -274,6 +282,9 @@ foreach ($normalHandoff in $normalHandoffs) {
     if (Test-Path -LiteralPath $normalHandoff) {
         $normalHandoffText = Get-Content -Raw -Encoding UTF8 $normalHandoff
         Require-NotContains $normalHandoffText '(?im)^\s*-\s*(Handoff prompt|Prompt for the next agent):' "persistent prompt field in $(Split-Path -Leaf $normalHandoff)"
+        # A bare dated bullet is the unlabelled record form that forces the next
+        # agent to re-derive the kind by interpreting the prose.
+        Require-NotContains $normalHandoffText '(?m)^- [0-9]{4}-[0-9]{2}-[0-9]{2} ' "unlabelled log record in $(Split-Path -Leaf $normalHandoff)"
     }
 }
 

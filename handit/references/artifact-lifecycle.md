@@ -57,6 +57,19 @@ A record dies when it is superseded, landed, or resolved:
 
 Never evict failed attempts, rejected alternatives, or unresolved blockers. None of those leave a trace in the repository, so the handoff is the only place they can survive.
 
+A record's kind decides which of the three causes can ever reach it, so eviction is a lookup rather than an interpretation of the prose:
+
+| Kind | Dies when |
+| --- | --- |
+| `decision` | superseded, or landed in code, configuration, or a spec |
+| `blocker` | superseded, or resolved |
+| `failed` | never |
+| `rejected` | never |
+
+Read the kind first. If it admits no death cause, the record stays and nothing further needs deciding.
+
+`landed` reaches only `decision` records, which is the mechanism behind successful work expiring on its own. A `blocker` leaves active context by being resolved, never by shipping.
+
 These are state tests, not importance judgements. Ask whether a record is still true and still load-bearing, not whether it seems significant.
 
 ### When To Evict
@@ -67,7 +80,16 @@ Do not wait for a size threshold. A threshold means every session between thresh
 
 ### Where Evicted Records Go
 
-Append them to `HandoffDocs/artifacts/<execution-slug>/history.md`, oldest first, each with its eviction date and cause. Add or update one `History` row in the active handoff linking to that file.
+Append them to `HandoffDocs/artifacts/<execution-slug>/history.md`, oldest first, keeping each record's original ID:
+
+```markdown
+| ID | Evicted | Cause | Record |
+| --- | --- | --- | --- |
+```
+
+Add or update one `History` row in the active handoff linking to that file, and list the evicted IDs in its `Covered` cell.
+
+Retire the ID with the record. A slot's next record continues from the highest ID ever issued, never from the highest still present, so a reference to `R-04` resolves to one record whether it is live or evicted.
 
 Move, never delete. Eviction removes a record from default context; it does not destroy it. Creating and appending to `history.md` requires no user confirmation. Deleting it does.
 

@@ -50,7 +50,7 @@ Workflow:
    - The report must preserve the key historical details being removed or condensed: every dropped record, relevant artifact paths, stale context notes, the previous status, and any legacy stored transfer-prompt field. When migrating a legacy handoff, this includes its `Progress Log`, `Findings and Decisions`, `Context Packet`, and `Handoff Back` contents.
    - Stop if the report cannot be created. Do not rewrite the active handoff.
    - Preserve complete frontmatter, the status block, `Scope`, `Context`, `Task Binding` when present, `Artifacts`, `Study Notes`, and `Extra Files`.
-   - Preserve every live record. Drop only records already dead under `Record Lifecycle`, and prefer appending those to `history.md` over writing a report.
+   - Preserve every live record, keeping its original ID and kind unchanged. Drop only records already dead under `Record Lifecycle`, and prefer appending those to `history.md` over writing a report. Never renumber records to close gaps left by eviction.
    - Omit legacy stored transfer-prompt fields from active context after their contents are preserved in the report.
    - Add or update `History` with one row linking to the report.
    - Never remove unresolved blockers, risks, user-confirmation items, cleanup candidates, or `Extra Files` rows.
@@ -58,14 +58,14 @@ Workflow:
    - Move machine fields from `Metadata` into frontmatter.
    - Rewrite `Handoff Back` as the status block at the top.
    - Merge `Mission` into `Scope`, and `Context Panel` plus `Context Packet` into `Context`, dropping which files a previous agent read and which commands it ran.
-   - Merge `Progress Log` and `Findings and Decisions` into `Log`, keeping only records still live under `Record Lifecycle`.
+   - Merge `Progress Log` and `Findings and Decisions` into `Log`, keeping only records still live under `Record Lifecycle`. Issue IDs from `R-01` in the order the records already appear, and label each with the kind it turns out to be. If a legacy entry is a bare event with no failure, rejection, blocker, or decision behind it, drop it instead of inventing a kind for it.
    - Drop every empty section rather than carrying it forward.
 6. For index compaction:
    - Create `HandoffDocs/artifacts/handoff-index/reports/YYYYMMDD-HHMMSS-compact-history.md` before editing `HandoffDocs/handoff.md`.
    - The report must preserve any older `Done` or `Archived` rows removed from the active index, plus a short explanation of what was compacted.
    - Stop if the report cannot be created. Do not rewrite the index.
    - Re-read `HandoffDocs/handoff.md` immediately before editing.
-   - Preserve all `Active` and `Blocked` rows. Shorten long `Next Action`, `Blocker`, or `Needed` text into one-line operational signal.
+   - Preserve all `Active` and `Blocked` rows. Shorten long `Next Action`, `Blocker`, `Needed`, `Result`, `Follow-up`, and `Reason` text into one short operational phrase; the linked handoff or archived file already carries the detail. Shortening a cell is not dropping a row.
    - Keep only the most recent 20 rows in `Done` and `Archived`; move older rows into the report. If dates do not make recency clear, preserve existing order and treat lower rows as newer.
 7. Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or historical artifacts unless the active handoff or index explicitly links to a specific compact history report that is needed for the compaction.
 8. Report the compacted target, report path, remaining line count if checked, preserved Task Binding, and unresolved blockers. End after reporting.
