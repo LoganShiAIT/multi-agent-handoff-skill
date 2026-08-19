@@ -175,15 +175,13 @@ slug / status / owner / updated / branch / task / work_item
 
 能从代码、规范或 git 里读出来的，不写进 `Log`：改了哪些文件、跑了什么命令、实现了什么功能，这些复原成本极低，写进来只会制造过期风险。
 
-每条记录带一个编号和一个类型：
+只写这四类，每条记录开头标出它属于哪一类：
 
 ```markdown
-- [R-02 rejected] 2026-08-03 否决了基于数量的自动压缩，因为数量把体量和过期混为一谈。
+- [rejected] 2026-08-03 否决了基于数量的自动压缩，因为数量把体量和过期混为一谈。
 ```
 
-类型只有四种——`failed`（失败的尝试和原因）、`rejected`（被否决的方案和理由）、`blocker`（仍未解决的阻塞）、`decision`（后续工作不该悄悄推翻的决策）。类型在写入时确定，之后不再变化。
-
-编号在槽位内从 `R-01` 递增，且**淘汰后也不回收**。这样 `history.md`、另一个槽位或一篇 study note 就能引用某条记录，而不必把它的正文复制一份。
+`failed` 失败的尝试和原因、`rejected` 被否决的方案和理由、`blocker` 仍未解决的阻塞、`decision` 后续工作不该悄悄推翻的决策。类型在写入时确定，之后不再变化。
 
 ### 记录会自动下线
 
@@ -237,7 +235,6 @@ Task spec 与 full handoff 的所有权规则很简单：
 - 一个 task spec 可以拆成多个 work item；
 - 一个 work item 对应一个 execution handoff；
 - 每个 execution handoff 只占用索引里的一行；
-- **索引行是指针，不是摘要**：`Next Action`、`Blocker`、`Needed`、`Result`、`Follow-up`、`Reason` 每格只写一句可操作短语，细节留在链接指向的文件里。判据是这一格会不会自己过期——短语会随链接文件一起变，而一整段复述则是没人负责同步的第二副本；
 - task/spec 只由协调者或显式 task 更新动作维护；
 - 对共享索引只做最小局部编辑；
 - 过长的活跃上下文先留档再压缩，留档 report 由 handoff 内的历史索引指向；

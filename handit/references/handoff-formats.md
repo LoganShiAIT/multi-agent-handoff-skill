@@ -82,7 +82,7 @@ work_item: <work-item id, or omit when unbound>
 - Do not read:
 
 ## Log
-- [R-01 decision] YYYY-MM-DD One fact that changes what the next agent should do.
+- [decision] YYYY-MM-DD One fact that changes what the next agent should do.
 ```
 
 Nothing else belongs in a new handoff. Append a section from `Optional Sections` only when it has content.
@@ -109,10 +109,10 @@ Do not record which files a previous agent read or which commands it ran. The ne
 
 Record only facts that cannot be derived from code, specs, or git.
 
-Every record opens with an ID and a kind:
+Every record opens with its kind:
 
 ```text
-- [R-02 rejected] 2026-08-03 Count-based auto-compaction was rejected because count conflates volume with staleness.
+- [rejected] 2026-08-03 Count-based auto-compaction was rejected because count conflates volume with staleness.
 ```
 
 The four kinds are the only things worth a slot:
@@ -123,8 +123,6 @@ The four kinds are the only things worth a slot:
 - `decision` — a decision that later work must not silently reverse.
 
 Assign the kind when writing the record. It states what the record is, not how important it is, and it does not change afterwards. `Record Lifecycle` in `references/artifact-lifecycle.md` decides eviction from the kind alone, so an unlabelled record forces every later agent to re-derive the kind by interpreting the prose.
-
-IDs run from `R-01` upward within a slot and are never reused, including after eviction. Stable IDs are what let `history.md`, another slot, or a study note point at a record instead of copying its text.
 
 Do not write: commands executed, files inspected, files changed, or features implemented. All of those are recoverable from the repository, and restating them is how a handoff turns into a journal.
 
@@ -160,7 +158,7 @@ Required spec paths belong in `Context` under `Must read`, not here. The task re
 | --- | --- | --- |
 ```
 
-`History` links to `artifacts/<execution-slug>/history.md` and to any compact-history reports. Fill `Covered` with the evicted record IDs, such as `R-01, R-04` or `R-01–R-03`, so the active handoff still shows which records left and where they went.
+`History` links to `artifacts/<execution-slug>/history.md` and to any compact-history reports.
 
 ```markdown
 ## Extra Files
@@ -192,7 +190,7 @@ updated: YYYY-MM-DD
 - Do not read:
 
 ## Log
-- [R-01 decision] YYYY-MM-DD One fact that changes what the next agent should do.
+- [decision] YYYY-MM-DD One fact that changes what the next agent should do.
 ```
 
 If a light handoff needs artifacts, bindings, or history, it has outgrown light and should become a full handoff.
@@ -220,16 +218,6 @@ Generate index rows from handoff frontmatter rather than maintaining status in t
 | Slug | Archived At | Reason | Replacement |
 | --- | --- | --- | --- |
 ```
-
-### Rows Are Pointers
-
-A cell holds one short operational phrase and a link. It never holds a summary of the linked file.
-
-`Next Action`, `Blocker`, `Needed`, `Result`, `Follow-up`, and `Reason` are the cells that drift, because each one restates something the handoff or archived file already says in full. Keep each to a single clause and let the link carry the rest.
-
-The test is whether a cell could go stale on its own. A phrase like `blocked on schema decision` stays true until the linked file changes with it; a paragraph recounting what was found, how it was fixed, and what was verified is a second copy that nothing keeps in sync.
-
-When a row seems to need more, the detail belongs in the linked file, not in a wider cell.
 
 ## Maintenance Boundary
 

@@ -211,7 +211,7 @@ if [ -f "$references_dir/handoff-formats.md" ]; then
     require_text_grep "$full_template" '^## Scope$' "full template Scope section"
     require_text_grep "$full_template" '^## Context$' "full template Context section"
     require_text_grep "$full_template" '^## Log$' "full template Log section"
-    require_text_grep "$full_template" '^- \[R-[0-9]+ (failed|rejected|blocker|decision)\] ' "full template record ID and kind"
+    require_text_grep "$full_template" '^- \[(failed|rejected|blocker|decision)\] ' "full template record kind"
     for legacy_section in \
       'Metadata' 'Mission' 'Context Panel' 'Context Packet' 'Progress Log' \
       'Findings and Decisions' 'Handoff Back' 'Artifacts' 'Study Notes' \
@@ -229,7 +229,7 @@ if [ -f "$references_dir/handoff-formats.md" ]; then
     require_text_grep "$light_template" '^> \*\*' "light template human status block"
     require_text_grep "$light_template" '^## Context$' "light template Context section"
     require_text_grep "$light_template" '^## Log$' "light template Log section"
-    require_text_grep "$light_template" '^- \[R-[0-9]+ (failed|rejected|blocker|decision)\] ' "light template record ID and kind"
+    require_text_grep "$light_template" '^- \[(failed|rejected|blocker|decision)\] ' "light template record kind"
     for legacy_light_section in 'Intent' 'Current Understanding' 'Progress' 'Next'; do
       require_text_not_grep "$light_template" "^## ${legacy_light_section}\$" \
         "legacy section '${legacy_light_section}' in light handoff template"
@@ -239,8 +239,7 @@ if [ -f "$references_dir/handoff-formats.md" ]; then
   require_grep '^## Optional Sections$' "$references_dir/handoff-formats.md" "optional sections block"
   require_grep 'only when it has content' "$references_dir/handoff-formats.md" "conditional section rule"
   require_grep 'cannot be derived from code, specs, or git' "$references_dir/handoff-formats.md" "non-derivable record rule"
-  require_grep 'are never reused, including after eviction' "$references_dir/handoff-formats.md" "record ID reuse rule"
-  require_grep '^### Rows Are Pointers$' "$references_dir/handoff-formats.md" "index row pointer rule"
+  require_grep 'Assign the kind when writing the record' "$references_dir/handoff-formats.md" "record kind assignment rule"
 fi
 
 # --- Record lifecycle guards --------------------------------------------------
@@ -257,7 +256,6 @@ if [ -f "$references_dir/artifact-lifecycle.md" ]; then
   require_grep '^\| `decision` \| superseded, or landed' "$references_dir/artifact-lifecycle.md" "decision record death causes"
   require_grep '^\| `failed` \| never \|$' "$references_dir/artifact-lifecycle.md" "failed record permanence"
   require_grep '^\| `rejected` \| never \|$' "$references_dir/artifact-lifecycle.md" "rejected record permanence"
-  require_grep 'Retire the ID with the record' "$references_dir/artifact-lifecycle.md" "record ID retirement rule"
 fi
 
 for lifecycle_command in inithandoff.md tracehandoff.md compacthandoff.md; do

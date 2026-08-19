@@ -80,16 +80,7 @@ Do not wait for a size threshold. A threshold means every session between thresh
 
 ### Where Evicted Records Go
 
-Append them to `HandoffDocs/artifacts/<execution-slug>/history.md`, oldest first, keeping each record's original ID:
-
-```markdown
-| ID | Evicted | Cause | Record |
-| --- | --- | --- | --- |
-```
-
-Add or update one `History` row in the active handoff linking to that file, and list the evicted IDs in its `Covered` cell.
-
-Retire the ID with the record. A slot's next record continues from the highest ID ever issued, never from the highest still present, so a reference to `R-04` resolves to one record whether it is live or evicted.
+Append them to `HandoffDocs/artifacts/<execution-slug>/history.md`, oldest first, each with its eviction date and cause. Add or update one `History` row in the active handoff linking to that file.
 
 Move, never delete. Eviction removes a record from default context; it does not destroy it. Creating and appending to `history.md` requires no user confirmation. Deleting it does.
 

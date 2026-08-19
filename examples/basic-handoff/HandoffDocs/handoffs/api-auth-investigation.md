@@ -23,7 +23,7 @@ branch: main
 - Do not read: `HandoffDocs/archive/`, `HandoffDocs/study/`, other execution handoffs, unrelated source folders
 
 ## Log
-- [R-01 decision] 2026-07-02 The refreshed token is stored but the retry still sends the original Authorization header. Cause is stale retry headers, not provider-side token expiry; do not reopen the provider configuration path.
+- [decision] 2026-07-02 The refreshed token is stored but the retry still sends the original Authorization header. Cause is stale retry headers, not provider-side token expiry.
 
 ## Artifacts
 - `HandoffDocs/artifacts/api-auth-investigation/test-results/20260702-101100-auth-client.txt`: failing run showing the 401 on retry.
