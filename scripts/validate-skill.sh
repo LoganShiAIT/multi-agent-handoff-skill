@@ -211,6 +211,7 @@ if [ -f "$references_dir/handoff-formats.md" ]; then
     require_text_grep "$full_template" '^## Scope$' "full template Scope section"
     require_text_grep "$full_template" '^## Context$' "full template Context section"
     require_text_grep "$full_template" '^## Log$' "full template Log section"
+    require_text_grep "$full_template" '^- \[(failed|rejected|blocker|decision)\] ' "full template record kind"
     for legacy_section in \
       'Metadata' 'Mission' 'Context Panel' 'Context Packet' 'Progress Log' \
       'Findings and Decisions' 'Handoff Back' 'Artifacts' 'Study Notes' \
@@ -228,6 +229,7 @@ if [ -f "$references_dir/handoff-formats.md" ]; then
     require_text_grep "$light_template" '^> \*\*' "light template human status block"
     require_text_grep "$light_template" '^## Context$' "light template Context section"
     require_text_grep "$light_template" '^## Log$' "light template Log section"
+    require_text_grep "$light_template" '^- \[(failed|rejected|blocker|decision)\] ' "light template record kind"
     for legacy_light_section in 'Intent' 'Current Understanding' 'Progress' 'Next'; do
       require_text_not_grep "$light_template" "^## ${legacy_light_section}\$" \
         "legacy section '${legacy_light_section}' in light handoff template"
@@ -237,6 +239,7 @@ if [ -f "$references_dir/handoff-formats.md" ]; then
   require_grep '^## Optional Sections$' "$references_dir/handoff-formats.md" "optional sections block"
   require_grep 'only when it has content' "$references_dir/handoff-formats.md" "conditional section rule"
   require_grep 'cannot be derived from code, specs, or git' "$references_dir/handoff-formats.md" "non-derivable record rule"
+  require_grep 'Assign the kind when writing the record' "$references_dir/handoff-formats.md" "record kind assignment rule"
 fi
 
 # --- Record lifecycle guards --------------------------------------------------
@@ -250,6 +253,9 @@ if [ -f "$references_dir/artifact-lifecycle.md" ]; then
   require_grep 'Move, never delete' "$references_dir/artifact-lifecycle.md" "eviction move-not-delete rule"
   require_grep 'Never evict failed attempts, rejected alternatives, or unresolved blockers' "$references_dir/artifact-lifecycle.md" "never-evict whitelist"
   require_grep '10 live records' "$references_dir/artifact-lifecycle.md" "slot scope alarm threshold"
+  require_grep '^\| `decision` \| superseded, or landed' "$references_dir/artifact-lifecycle.md" "decision record death causes"
+  require_grep '^\| `failed` \| never \|$' "$references_dir/artifact-lifecycle.md" "failed record permanence"
+  require_grep '^\| `rejected` \| never \|$' "$references_dir/artifact-lifecycle.md" "rejected record permanence"
 fi
 
 for lifecycle_command in inithandoff.md tracehandoff.md compacthandoff.md; do
@@ -275,6 +281,9 @@ for normal_handoff in \
   "$repo_root/examples/light-handoff/HandoffDocs/light/api-auth-investigation.md"; do
   if [ -f "$normal_handoff" ]; then
     require_not_grep '^[[:space:]]*-[[:space:]]*(Handoff prompt|Prompt for the next agent):' "$normal_handoff" "persistent prompt field in $(basename "$normal_handoff")"
+    # A bare dated bullet is the unlabelled record form that forces the next
+    # agent to re-derive the kind by interpreting the prose.
+    require_not_grep '^- [0-9]{4}-[0-9]{2}-[0-9]{2} ' "$normal_handoff" "unlabelled log record in $(basename "$normal_handoff")"
   fi
 done
 

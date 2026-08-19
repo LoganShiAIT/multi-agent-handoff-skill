@@ -15,4 +15,4 @@ updated: 2026-07-02
 - Do not read: project-wide handoff state, unrelated source folders
 
 ## Log
-- 2026-07-02 The retry after a 401 reuses the original Authorization header instead of the refreshed one.
+- [decision] 2026-07-02 The retry after a 401 reuses the original Authorization header instead of the refreshed one.

@@ -22,13 +22,13 @@ Workflow:
 
 1. Resolve the handoff and mode from explicit arguments, current context, and existing files. If ambiguous, ask which handoff to update.
 2. Read the selected light file, or read the full index followed by the selected full execution handoff.
-3. Append to `Log` only requested facts that cannot be derived from code, specs, or git:
-   - What was decided, and what that decision rules out
-   - What was attempted and failed, with the reason
-   - Which alternative was rejected, with the reason
-   - Which blockers are still open
+3. Append to `Log` only requested facts that cannot be derived from code, specs, or git, writing each as `- [<kind>] YYYY-MM-DD <fact>`:
+   - `decision` — what was decided, and what that decision rules out
+   - `failed` — what was attempted and failed, with the reason
+   - `rejected` — which alternative was rejected, with the reason
+   - `blocker` — which blockers are still open
    Do not append commands executed, files inspected, or work that already landed in the repository. Those are recoverable without the handoff.
-4. Evict under `Record Lifecycle`: after appending, remove records the new ones superseded, landed, or resolved, and append them to `HandoffDocs/artifacts/<execution-slug>/history.md` with their eviction date and cause. Never evict failed attempts, rejected alternatives, or unresolved blockers.
+4. Evict under `Record Lifecycle`: after appending, remove records the new ones superseded, landed, or resolved, and append them to `HandoffDocs/artifacts/<execution-slug>/history.md` with their eviction date and cause. Decide from the kind, not the prose: only `decision` records can land, only `blocker` records can resolve, and `failed` or `rejected` records have no death cause. Never evict failed attempts, rejected alternatives, or unresolved blockers.
 5. If more than 10 live records remain after eviction, do not compact them. Report that the slot's scope is probably too large.
 6. Refresh the status block and frontmatter `updated` in the same edit.
 7. For light, update only the status block and `Log`.

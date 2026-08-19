@@ -50,7 +50,7 @@ Workflow:
    - The report must preserve the key historical details being removed or condensed: every dropped record, relevant artifact paths, stale context notes, the previous status, and any legacy stored transfer-prompt field. When migrating a legacy handoff, this includes its `Progress Log`, `Findings and Decisions`, `Context Packet`, and `Handoff Back` contents.
    - Stop if the report cannot be created. Do not rewrite the active handoff.
    - Preserve complete frontmatter, the status block, `Scope`, `Context`, `Task Binding` when present, `Artifacts`, `Study Notes`, and `Extra Files`.
-   - Preserve every live record. Drop only records already dead under `Record Lifecycle`, and prefer appending those to `history.md` over writing a report.
+   - Preserve every live record, keeping its kind unchanged. Drop only records already dead under `Record Lifecycle`, and prefer appending those to `history.md` over writing a report.
    - Omit legacy stored transfer-prompt fields from active context after their contents are preserved in the report.
    - Add or update `History` with one row linking to the report.
    - Never remove unresolved blockers, risks, user-confirmation items, cleanup candidates, or `Extra Files` rows.
@@ -58,7 +58,7 @@ Workflow:
    - Move machine fields from `Metadata` into frontmatter.
    - Rewrite `Handoff Back` as the status block at the top.
    - Merge `Mission` into `Scope`, and `Context Panel` plus `Context Packet` into `Context`, dropping which files a previous agent read and which commands it ran.
-   - Merge `Progress Log` and `Findings and Decisions` into `Log`, keeping only records still live under `Record Lifecycle`.
+   - Merge `Progress Log` and `Findings and Decisions` into `Log`, keeping only records still live under `Record Lifecycle`. Label each with the kind it turns out to be. If a legacy entry is a bare event with no failure, rejection, blocker, or decision behind it, drop it instead of inventing a kind for it.
    - Drop every empty section rather than carrying it forward.
 6. For index compaction:
    - Create `HandoffDocs/artifacts/handoff-index/reports/YYYYMMDD-HHMMSS-compact-history.md` before editing `HandoffDocs/handoff.md`.

@@ -54,7 +54,7 @@ Mere mention of another agent, a future session, handoff, or resumability may ac
 
 Keep routine minimal handoff maintenance separate from command routing. After meaningful implementation, investigation, failure, validation, blocker, or next-step changes, update the active handoff concisely without presenting that maintenance as `/tracehandoff`. Use `/tracehandoff` only for an explicit user request to synchronize or backfill progress.
 
-Routine maintenance is where most records are written, so it is also where they must be evicted. Refresh the status block, and append to `Log` only facts that cannot be derived from code, specs, or git: failed attempts, rejected alternatives, open blockers, and decisions later work must not reverse. Then drop records the new ones superseded, landed, or resolved. Never drop failed attempts, rejected alternatives, or unresolved blockers.
+Routine maintenance is where most records are written, so it is also where they must be evicted. Refresh the status block, and append to `Log` only facts that cannot be derived from code, specs, or git, each written as `- [<kind>] <date> <fact>` with kind `failed`, `rejected`, `blocker`, or `decision`. Then drop records the new ones superseded, landed, or resolved; the kind decides which of those can reach a record. Never drop failed attempts, rejected alternatives, or unresolved blockers.
 
 Route selected actions as follows:
 

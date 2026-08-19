@@ -82,7 +82,7 @@ work_item: <work-item id, or omit when unbound>
 - Do not read:
 
 ## Log
-- YYYY-MM-DD One fact that changes what the next agent should do.
+- [decision] YYYY-MM-DD One fact that changes what the next agent should do.
 ```
 
 Nothing else belongs in a new handoff. Append a section from `Optional Sections` only when it has content.
@@ -109,12 +109,20 @@ Do not record which files a previous agent read or which commands it ran. The ne
 
 Record only facts that cannot be derived from code, specs, or git.
 
-Write:
+Every record opens with its kind:
 
-- An attempt that failed, and why it failed.
-- An alternative that was rejected, and the reason.
-- A blocker that is still open.
-- A decision that later work must not silently reverse.
+```text
+- [rejected] 2026-08-03 Count-based auto-compaction was rejected because count conflates volume with staleness.
+```
+
+The four kinds are the only things worth a slot:
+
+- `failed` — an attempt that failed, and why it failed.
+- `rejected` — an alternative that was rejected, and the reason.
+- `blocker` — a blocker that is still open.
+- `decision` — a decision that later work must not silently reverse.
+
+Assign the kind when writing the record. It states what the record is, not how important it is, and it does not change afterwards. `Record Lifecycle` in `references/artifact-lifecycle.md` decides eviction from the kind alone, so an unlabelled record forces every later agent to re-derive the kind by interpreting the prose.
 
 Do not write: commands executed, files inspected, files changed, or features implemented. All of those are recoverable from the repository, and restating them is how a handoff turns into a journal.
 
@@ -182,7 +190,7 @@ updated: YYYY-MM-DD
 - Do not read:
 
 ## Log
-- YYYY-MM-DD One fact that changes what the next agent should do.
+- [decision] YYYY-MM-DD One fact that changes what the next agent should do.
 ```
 
 If a light handoff needs artifacts, bindings, or history, it has outgrown light and should become a full handoff.

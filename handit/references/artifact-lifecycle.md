@@ -57,6 +57,19 @@ A record dies when it is superseded, landed, or resolved:
 
 Never evict failed attempts, rejected alternatives, or unresolved blockers. None of those leave a trace in the repository, so the handoff is the only place they can survive.
 
+A record's kind decides which of the three causes can ever reach it, so eviction is a lookup rather than an interpretation of the prose:
+
+| Kind | Dies when |
+| --- | --- |
+| `decision` | superseded, or landed in code, configuration, or a spec |
+| `blocker` | superseded, or resolved |
+| `failed` | never |
+| `rejected` | never |
+
+Read the kind first. If it admits no death cause, the record stays and nothing further needs deciding.
+
+`landed` reaches only `decision` records, which is the mechanism behind successful work expiring on its own. A `blocker` leaves active context by being resolved, never by shipping.
+
 These are state tests, not importance judgements. Ask whether a record is still true and still load-bearing, not whether it seems significant.
 
 ### When To Evict
