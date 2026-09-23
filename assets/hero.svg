@@ -1,6 +1,6 @@
 <svg width="1280" height="520" viewBox="0 0 1280 520" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">Handit banner</title>
-  <desc id="desc">A Handit product banner showing multiple agent task cards connected to a shared handoff index.</desc>
+  <title id="title">handit skill banner</title>
+  <desc id="desc">A handit skill product banner showing multiple agent task cards connected to a shared handoff index.</desc>
   <defs>
     <linearGradient id="paper" x1="0" y1="0" x2="1280" y2="520" gradientUnits="userSpaceOnUse">
       <stop stop-color="#F8F4EA"/>
@@ -30,7 +30,7 @@
 
   <g transform="translate(86 72)">
     <text x="0" y="0" class="tiny">PROJECT-LOCAL COORDINATION</text>
-    <text x="0" y="104" font-family="Georgia, 'Times New Roman', serif" font-size="86" font-weight="700" fill="#162018">Handit</text>
+    <text x="0" y="104" font-family="Georgia, 'Times New Roman', serif" font-size="60" font-weight="700" fill="#162018">handit skill</text>
     <text x="4" y="164" class="mono">one index + focused task handoffs</text>
     <g transform="translate(0 204)">
       <rect x="0" y="0" width="238" height="54" rx="0" fill="#162018"/>

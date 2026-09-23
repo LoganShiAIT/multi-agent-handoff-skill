@@ -2,6 +2,13 @@
 
 Use these rules for full handoffs that create, reference, compact, archive, or clean up process artifacts.
 
+Artifact placement applies to ordinary authorized task outputs. Recording paths,
+classifying records, and refreshing handoff state happen only within an eligible
+commit checkpoint or explicit handoff action. Artifact creation or age is not an
+extra trigger. Between commits retain known facts in the current context without
+maintenance reads/writes; do not investigate or run fresh checks just to enrich
+records. Explicit archive/study/compaction actions retain their stated scope.
+
 ## Artifacts And Trust
 
 Put temporary or process artifacts under `HandoffDocs/artifacts/<execution-slug>/` with local timestamps like `YYYYMMDD-HHMMSS`. Keep handoff entries to conclusions plus artifact paths; do not paste long logs, generated reports, or raw test output into active handoffs.
@@ -21,7 +28,7 @@ Execution progress: active execution handoff
 Historical evidence: referenced active artifacts, then archive/study/history
 ```
 
-Do not collapse these fact types into one precedence rule. If planned intent and implemented behavior differ, record the gap in the execution handoff instead of treating either as stale.
+Do not collapse these fact types into one precedence rule. If planned intent and implemented behavior differ, record the known gap only during an authorized write instead of treating either as stale.
 
 ## Artifact Paths
 
@@ -74,9 +81,9 @@ These are state tests, not importance judgements. Ask whether a record is still 
 
 ### When To Evict
 
-Evict incrementally, on every write to `Log`. After appending a record, check whether the new record supersedes, lands, or resolves anything already present, and evict what it killed.
+Apply eviction only within an eligible commit checkpoint or explicitly authorized write to `Log`. Use current conversation facts and the selected record to identify what is superseded, landed, or resolved. Do not inspect records between execution steps or expand investigation, tests, or historical reads to decide retention. These lifecycle rules never create a maintenance trigger.
 
-Do not wait for a size threshold. A threshold means every session between thresholds loads dead context.
+No size threshold, elapsed time, or record count triggers an automatic write. Explicit compaction retains its own authorized scope.
 
 ### Where Evicted Records Go
 
@@ -86,7 +93,7 @@ Move, never delete. Eviction removes a record from default context; it does not 
 
 ### Scope Alarm
 
-If a slot still holds more than 10 live records after eviction, do not compact them. Report that the slot's scope is probably too large and that splitting it is the fix.
+If a slot still holds more than 10 live records after eviction, do not compact them. Report the observed scope/record-count boundary without creating a split plan or new work items.
 
 A high count of genuinely live records is a scoping problem, not a length problem. Compacting real decisions to satisfy a budget destroys the only copy.
 

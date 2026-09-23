@@ -53,7 +53,7 @@ Workflow:
 7. Before editing `HandoffDocs/handoff.md`, re-read it and make the smallest local change.
 8. Use system-clock dates for frontmatter `updated`.
 9. Create no artifact directories at initialization. Create each one when a file is actually written into it.
-10. Leave `Log` empty. Records arrive from later work and are evicted under `Record Lifecycle`.
+10. Leave `Log` empty and omit `checkpoint_commit`. New status contains only State and Blocked; generate no future-action fields or plans. Records arrive only at authorized writes under `Record Lifecycle`. Selecting an old file leaves Next/equivalent fields inert: do not execute, refresh, copy, or rename them; removal requires explicit migration/compaction.
 11. Never create or store a transfer prompt during initialization.
 
-Report mode, execution slug, handoff path, task/work-item binding if any, and immediate execution focus. End after reporting.
+Report mode, execution slug, handoff path, task/work-item binding if any, and factual current state. Initialization completion adds no automatic checkpoint. End after reporting.

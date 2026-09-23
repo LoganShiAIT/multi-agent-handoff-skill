@@ -27,7 +27,7 @@ Workflow:
    - Do not copy proposal, spec, design, or work-item prose into the prompt.
 4. For an unbound legacy or direct handoff:
    - Include a compact mission and scope summary from the current handoff.
-5. Require the receiving agent to update its own execution handoff and owned index row when the shared filesystem is available.
+5. Require the receiving agent to follow the same commit/explicit-sync boundary below. Reference only the user-authorized mission or formal bound work item. Ignore legacy Next/equivalent advice; never copy it into the prompt or infer extra work.
 6. Include scope boundaries, artifact placement, verification expectations, and return format.
 7. Emit the prompt in the response only. Do not write a file or modify handoff state.
 
@@ -43,11 +43,10 @@ Read:
 
 Use the Task Binding and `Context` section as the reading boundary. Execute only the bound work item. Do not edit task specs or other handoff slots unless the user explicitly expands scope.
 
-Before returning:
-- Refresh the status block and frontmatter `updated` in `<execution-handoff>`.
-- Append to `Log` only what cannot be derived from code, specs, or git: failed attempts, rejected alternatives, open blockers, decisions later work must not reverse. Evict records that the new ones superseded, landed, or resolved.
-- Update only its owned row in `HandoffDocs/handoff.md` when operational status changed.
-- Put temporary execution artifacts under the bound artifact directory.
+Maintenance: follow Handit `SKILL.md` Automatic Checkpoint Boundary. Only an observed successful substantive current-task commit with this selected handoff, or an explicit sync/save request, permits a state update. Skip failed commits, handoff-only commits, and duplicate `checkpoint_commit` SHA; an authorized substantive amend can checkpoint its new SHA. Record the full SHA only with a successful automatic write. Manual sync preserves it, and no-change sync writes nothing. Returning findings or blockers alone causes no maintenance reads or writes. Never create, request, stage, amend, or push commits for maintenance; no polling or external-commit backfill. Report write failure without advancing the marker or retrying.
+
+Save only known facts in State/Blocked and non-derivable Log facts. No extra tests/investigation to enrich records, no mandatory commit journal, no next-step plans or copied legacy Next. Preserve user scope and formal task references.
+Update only the owned index row when its factual status changes. Put temporary execution artifacts under the bound artifact directory.
 
 Return:
 - What changed or was found
@@ -66,7 +65,9 @@ Read `<handoff-path>` and follow its `Scope` and `Context` sections.
 Scope:
 - <compact current scope>
 
-Before returning, refresh the same handoff's status block and append to `Log` only what cannot be derived from code, specs, or git.
+Maintenance: follow Handit `SKILL.md` Automatic Checkpoint Boundary. Only an observed successful substantive current-task commit with this selected handoff, or an explicit sync/save request, permits a state update. Skip failed commits, handoff-only commits, and duplicate `checkpoint_commit` SHA; an authorized substantive amend can checkpoint its new SHA. Record the full SHA only with a successful automatic write. Manual sync preserves it, and no-change sync writes nothing. Returning findings or blockers alone causes no maintenance reads or writes. Never create, request, stage, amend, or push commits for maintenance; no polling or external-commit backfill. Report write failure without advancing the marker or retrying.
+
+Save only known facts in State/Blocked and non-derivable Log facts. No extra tests/investigation to enrich records, no mandatory commit journal, no next-step plans or copied legacy Next. Preserve user scope and formal task references.
 
 Return:
 - What changed or was found

@@ -16,7 +16,7 @@ For every file operation:
 - Put process artifacts under timestamped paths in `HandoffDocs/artifacts/<execution-slug>/`; if temporary files must exist elsewhere, record them in `Extra Files`.
 - Treat archive, cleanup, move, delete, relocate, git ignore, stage, commit, and push actions as confirmation-gated. Propose them with gentle labels before acting.
 - Do not delete or move files outside `HandoffDocs/artifacts/<execution-slug>/` without explicit user confirmation, even if they look temporary.
-- If a local merge, overwrite, archive, or cleanup is not obviously safe, stop after recording the issue in the execution handoff and ask the user or coordinator to reconcile.
+- If a local merge, overwrite, archive, or cleanup is not obviously safe, stop and report the issue; record it only within an authorized write, and ask the user or coordinator to reconcile.
 
 ## Timestamp Discipline
 
@@ -26,7 +26,7 @@ Never write a timestamp from memory. Take artifact-name timestamps from the syst
 
 Full archive audit may inspect, classify, and propose actions, but must not silently move, copy, delete, or relocate files.
 
-Without explicit user confirmation, agents may create or update expected task records/internal task docs, light or full handoff documents, expected directories, compact-history report artifacts, candidate classifications, owned index rows, and archive proposals. Task readiness still requires explicit user confirmation.
+Explicit actions may create or update their expected task records/internal task docs, handoffs, directories, history reports, classifications, index rows, and archive proposals. Automatic checkpoints write only selected execution state, never task specs or readiness. Task readiness still requires explicit user confirmation.
 
 Require explicit user confirmation before:
 
@@ -55,4 +55,10 @@ If policy is unclear, ask before modifying `.gitignore`, `.git/info/exclude`, st
 
 For full handoffs, use `HandoffDocs/handoff.md` as a compact dashboard. Before editing it, re-read the file, change only the affected row or minimal section, preserve unrelated rows exactly, and merge locally if another agent changed the file.
 
-Each agent owns its execution handoff and may update only its own index row unless acting as a coordinator. If a safe merge is not obvious, update the execution handoff with an index update request and ask the user or coordinator to reconcile.
+Each agent owns its execution handoff and may update only its own index row unless acting as a coordinator. If a safe merge is not obvious, report the failed index update. Within the authorized write, the handoff may state the observed conflict, without a generated recovery plan. Do not claim full checkpoint success or automatically retry.
+
+## Checkpoint Git Boundary
+
+Follow `SKILL.md` Automatic Checkpoint Boundary. A handoff-only commit does not trigger another checkpoint; a mixed commit qualifies only with substantive current-task deliverables. Never request, create, split, stage, amend, or push commits for handoff maintenance, or change ignore policy to hide its writes. Existing local/team policy remains in force and shared notes may stay uncommitted.
+
+Do not install hooks, run watchers, poll Git, or automatically backfill external-session commits. When needed for eligibility, read only the observed commit SHA and changed paths. A failed write leaves the successful commit intact and does not advance `checkpoint_commit` or start retries. Manual sync preserves the last automatic marker without inventing one.

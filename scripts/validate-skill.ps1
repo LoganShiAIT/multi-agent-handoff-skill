@@ -1,7 +1,9 @@
+param([string]$Root)
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoRoot = Split-Path -Parent $ScriptDir
+if ($Root) { $RepoRoot = (Resolve-Path -LiteralPath $Root).Path }
 $SkillDir = Join-Path $RepoRoot "handit"
 $SkillFile = Join-Path $SkillDir "SKILL.md"
 $AgentFile = Join-Path $SkillDir "agents\openai.yaml"
@@ -62,7 +64,7 @@ if (Test-Path -LiteralPath $SkillFile) {
 
     Require-Contains $skillText '(?ms)^---\s*\r?\nname:\s*handit\s*\r?\ndescription:\s*.+' "required SKILL.md frontmatter"
     Require-Contains $skillText '(?m)^## Lazy Command Routing$' "Lazy Command Routing"
-    Require-Contains $skillText 'routine minimal handoff maintenance separate from command routing' "routine maintenance boundary"
+    Require-Contains $skillText 'Automatic Checkpoint Boundary' "commit checkpoint boundary"
     Require-NotContains $skillText '(?i)After a handoff-related action.*suggest' "global post-command suggestion rule"
 
     if ($skillItem.Length -gt 8192) {
@@ -358,6 +360,47 @@ if (Test-Path -LiteralPath $externalTaskRecordPath) {
     $externalTaskRecordText = Get-Content -Raw -Encoding UTF8 $externalTaskRecordPath
     Require-Contains $externalTaskRecordText '(?m)^\s*-\s*Owner:\s*external\s*$' "external example owner"
 }
+
+
+# Checkpoint guards are scoped to current templates/examples, not formal plans or legacy inputs.
+$futureField = '(?im)^(>\s*\*\*|#{1,6}\s+|-\s+)(Next([ -]Action|[ -]Steps?)?|Needed|Follow-up|Plan|Action Items)\b|^\|[^\r\n]*\|\s*(Next Action|Needed|Follow-up|Plan|Action Items)\s*\|'
+$unconditional = '(?im)before (returning|every return)|after (every |each |meaningful |substantive )(action|work|implementation|investigation)|whenever[^\r\n]*(state changes|progress)'
+foreach ($heading in @('## Full Execution Handoff Template', '## Light Handoff Template', '## Full Index Template')) {
+    $block = Get-FencedBlock $handoffFormatsText $heading
+    Require-NotContains $block $futureField "$heading future-action field"
+    if ($heading -ne '## Full Index Template') {
+        Require-Contains $block '(?m)^> \*\*State\*\*' "$heading State"
+        Require-Contains $block '(?m)^> \*\*Blocked\*\*' "$heading Blocked"
+    }
+}
+$currentExamples = @(
+    'examples/basic-handoff/HandoffDocs/handoff.md',
+    'examples/basic-handoff/HandoffDocs/handoffs/api-auth-investigation.md',
+    'examples/light-handoff/HandoffDocs/light/api-auth-investigation.md',
+    'examples/task-spec-external/HandoffDocs/handoff.md',
+    'examples/task-spec-external/HandoffDocs/handoffs/add-profile-filters--w-01.md',
+    'README.md'
+)
+foreach ($relative in $currentExamples) {
+    Require-NotContains (Get-Content -Raw -Encoding UTF8 (Join-Path $RepoRoot $relative)) $futureField "$relative future-action field"
+}
+foreach ($relative in @('handit/commands/handoffprompt.md', 'examples/handoffprompt-output.md', 'examples/light-handoffprompt-output.md')) {
+    $text = Get-Content -Raw -Encoding UTF8 (Join-Path $RepoRoot $relative)
+    Require-NotContains $text $unconditional "$relative unconditional maintenance"
+    Require-NotContains $text $futureField "$relative future-action field"
+    foreach ($term in @('observed successful substantive current-task commit', 'explicit sync/save request', 'checkpoint_commit', 'handoff-only', 'no maintenance reads or writes')) {
+        Require-Contains $text ([regex]::Escape($term)) "$relative $term"
+    }
+}
+foreach ($term in @('observed successful commit', 'Without a selected handoff', 'zero automatic maintenance reads or writes', 'checkpoint_commit', 'Duplicate SHA', 'handoff-only commit', 'Manual sync preserves', 'No hooks', 'do not write')) {
+    Require-Contains $skillText ([regex]::Escape($term)) "checkpoint rule: $term"
+}
+Require-NotContains $skillText $unconditional 'entrypoint unconditional maintenance'
+Require-NotContains $handoffFormatsText $unconditional 'formats unconditional maintenance'
+Require-Contains $traceHandoffText 'No new facts or requested correction means no write' 'manual sync no-op'
+Require-Contains $traceHandoffText 'preserve `checkpoint_commit` unchanged' 'manual sync marker preservation'
+Require-Contains $artifactLifecycleText 'Do not inspect records between execution steps' 'bounded eviction'
+Require-Path (Join-Path $RepoRoot 'examples/legacy-next/input.md') 'legacy compatibility fixture'
 
 if ($Errors.Count -gt 0) {
     Write-Host "Skill validation failed:" -ForegroundColor Red

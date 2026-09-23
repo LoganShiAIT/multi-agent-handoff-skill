@@ -1,0 +1,538 @@
+**********************
+PowerShell transcript start
+Start time: 20260923162001
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+$probe = Join-Path ([IO.Path]::GetTempPath()) ('handit-checkpoints-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path (Join-Path $probe 'HandoffDocs/handoffs') -Force | Out-Null
+Start-Transcript -Path (Join-Path $probe 'acceptance-transcript.txt') | Out-Null
+Set-Location -LiteralPath $probe
+git init -q
+git config user.name 'Handit Acceptance'
+git config user.email 'handit-test@example.invalid'
+[IO.File]::WriteAllText((Join-Path $probe 'task.txt'), "value=0`n")
+$note = @'
+---
+slug: probe
+status: in-progress
+owner: acceptance
+updated: 2026-09-23
+---
+# Probe
+> **State** Baseline initialized; live verification not performed.
+> **Next** Deploy to production (legacy advice; not authorized).
+> **Blocked** none
+## Scope
+- Goal: Validate local checkpoint behavior only.
+- Out of scope: Production, network, user-installed skills.
+## Context
+- Must read: task.txt
+## Log
+'@
+[IO.File]::WriteAllText((Join-Path $probe 'HandoffDocs/handoffs/probe.md'), $note)
+[IO.File]::WriteAllText((Join-Path $probe 'HandoffDocs/handoff.md'), "# Handoff Index`n## Active`n| Slug | Owner | Status | Updated |`n| --- | --- | --- | --- |`n| probe | acceptance | in-progress | 2026-09-23 |`n| untouched | other | in-progress | 2026-01-01 |`n")
+git add task.txt HandoffDocs
+git commit -q -m 'fixture baseline'
+Write-Output "SETUP $probe; selected handoff HandoffDocs/handoffs/probe.md; baseline commit is fixture setup."
+Stop-Transcript | Out-Null
+Write-Output $probe
+Process ID: 154192
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+
+
+
+
+
+SETUP C:\Users\francyzheng\AppData\Local\Temp\handit-checkpoints-bdce86785ed84e6fa4b586f55ccef9c1; selected handoff HandoffDocs/handoffs/probe.md; baseline commit is fixture setup.
+**********************
+PowerShell transcript end
+End time: 20260923162002
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162016
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'task.txt'), "value=1`n")
+$value = Get-Content -Raw task.txt
+if ($value.Trim() -ne 'value=2') { Write-Output 'Expected negative test: value=1 does not satisfy value=2' }
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'task.txt'), "value=2`n")
+if ((Get-Content -Raw task.txt).Trim() -ne 'value=2') { throw 'test failed' }
+Write-Output 'Passing local test. Live verification remains unperformed. No save requested; no handoff I/O.'
+git -c core.hooksPath=NUL -c commit.gpgsign=false commit --dry-run
+Write-Output "Proposed commit dry-run exit=$LASTEXITCODE; no successful commit, no checkpoint."
+git add task.txt
+git -c commit.gpgsign=false commit -m 'substantive task input one'
+if ($LASTEXITCODE -ne 0) { throw 'commit failed' }
+git log -1 --format=%H --name-only
+Stop-Transcript | Out-Null
+Process ID: 128148
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Expected negative test: value=1 does not satisfy value=2
+Passing local test. Live verification remains unperformed. No save requested; no handoff I/O.
+
+Proposed commit dry-run exit=1; no successful commit, no checkpoint.
+
+
+
+**********************
+PowerShell transcript end
+End time: 20260923162017
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162030
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+Get-Content -Raw HandoffDocs/handoffs/probe.md
+Get-Date -Format yyyy-MM-dd
+Stop-Transcript | Out-Null
+Process ID: 139236
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+---
+slug: probe
+status: in-progress
+owner: acceptance
+updated: 2026-09-23
+---
+# Probe
+> **State** Baseline initialized; live verification not performed.
+> **Next** Deploy to production (legacy advice; not authorized).
+> **Blocked** none
+## Scope
+- Goal: Validate local checkpoint behavior only.
+- Out of scope: Production, network, user-installed skills.
+## Context
+- Must read: task.txt
+## Log
+2026-09-23
+**********************
+PowerShell transcript end
+End time: 20260923162030
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162050
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+$note = @'
+---
+slug: probe
+status: in-progress
+owner: acceptance
+updated: 2026-09-23
+checkpoint_commit: a6034896836ff2095ee5bc4ca9eed5ccd93fd280
+---
+# Probe
+> **State** Local value check passed; live verification not performed.
+> **Next** Deploy to production (legacy advice; not authorized).
+> **Blocked** none
+## Scope
+- Goal: Validate local checkpoint behavior only.
+- Out of scope: Production, network, user-installed skills.
+## Context
+- Must read: task.txt
+## Log
+'@
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'HandoffDocs/handoffs/probe.md'), $note)
+Write-Output 'Checkpoint one saved. Index factual status unchanged; no index read/write; no Log added. Legacy advice inert.'
+$sha = git rev-parse HEAD
+if ($sha -ne 'a6034896836ff2095ee5bc4ca9eed5ccd93fd280') { throw 'unexpected SHA' }
+Write-Output 'Duplicate SHA matches known successful marker: zero handoff reads/writes.'
+git -c commit.gpgsign=false commit -m 'expected failure with nothing staged'
+if ($LASTEXITCODE -eq 0) { throw 'negative commit unexpectedly succeeded' }
+Write-Output 'Failed commit: zero checkpoint reads/writes.'
+git add HandoffDocs/handoffs/probe.md
+git -c commit.gpgsign=false commit -m 'handoff-only test input'
+if ($LASTEXITCODE -ne 0) { throw 'commit failed' }
+git log -1 --format=%H --name-only
+Stop-Transcript | Out-Null
+Process ID: 128620
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Checkpoint one saved. Index factual status unchanged; no index read/write; no Log added. Legacy advice inert.
+Duplicate SHA matches known successful marker: zero handoff reads/writes.
+
+Failed commit: zero checkpoint reads/writes.
+
+
+
+**********************
+PowerShell transcript end
+End time: 20260923162051
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162106
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+Write-Output 'Observed handoff-only paths: skip checkpoint without handoff reads/writes.'
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'task.txt'), "value=3`n")
+Add-Content -LiteralPath HandoffDocs/handoffs/probe.md -Value ''
+Write-Output 'Fixture input: trailing newline in handoff plus substantive source change for mixed-commit test (not a checkpoint).'
+git add task.txt HandoffDocs/handoffs/probe.md
+git -c commit.gpgsign=false commit -m 'mixed substantive test input'
+if ($LASTEXITCODE -ne 0) { throw 'commit failed' }
+git log -1 --format=%H --name-only
+Stop-Transcript | Out-Null
+Process ID: 140556
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Observed handoff-only paths: skip checkpoint without handoff reads/writes.
+Fixture input: trailing newline in handoff plus substantive source change for mixed-commit test (not a checkpoint).
+
+
+
+**********************
+PowerShell transcript end
+End time: 20260923162107
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162127
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+$path = Join-Path (Get-Location) 'HandoffDocs/handoffs/probe.md'
+$note = [IO.File]::ReadAllText($path)
+Write-Output 'Mixed commit: one selected-record read; no new factual status or Log item.'
+$note = $note.Replace('checkpoint_commit: a6034896836ff2095ee5bc4ca9eed5ccd93fd280', 'checkpoint_commit: 5d8fc3f94767d45c287537be23b650fcc34c19f6')
+[IO.File]::WriteAllText($path, $note)
+Write-Output 'Mixed checkpoint: one handoff write, no index I/O.'
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'task.txt'), "value=4`n")
+git add task.txt
+git -c commit.gpgsign=false commit --amend -m 'authorized substantive amended test input'
+if ($LASTEXITCODE -ne 0) { throw 'amend failed' }
+git log -1 --format=%H --name-only
+Stop-Transcript | Out-Null
+Process ID: 125832
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Mixed commit: one selected-record read; no new factual status or Log item.
+Mixed checkpoint: one handoff write, no index I/O.
+
+
+
+**********************
+PowerShell transcript end
+End time: 20260923162128
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162148
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+$path = Join-Path (Get-Location) 'HandoffDocs/handoffs/probe.md'
+$note = [IO.File]::ReadAllText($path)
+$note = $note.Replace('checkpoint_commit: 5d8fc3f94767d45c287537be23b650fcc34c19f6', 'checkpoint_commit: ff533c34de6da6c096a34acbfebd9877735575ce')
+[IO.File]::WriteAllText($path, $note)
+Write-Output 'New amend SHA: one selected-record read and one write; no index I/O or new plan.'
+Write-Output 'Scenario selection cleared: there is now no active handoff.'
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'task.txt'), "value=5`n")
+git add task.txt
+git -c commit.gpgsign=false commit -m 'task input without selected handoff'
+if ($LASTEXITCODE -ne 0) { throw 'commit failed' }
+Write-Output 'No selected handoff: no scan, initialization, checkpoint read or write.'
+Write-Output 'Scenario explicit save request selects HandoffDocs/handoffs/probe.md again for known uncommitted facts.'
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'task.txt'), "value=6`n")
+$note = [IO.File]::ReadAllText($path)
+$note = $note.Replace('Local value check passed; live verification not performed.', 'Uncommitted value=6 exists; live verification not performed.')
+[IO.File]::WriteAllText($path, $note)
+Write-Output 'Manual sync: one read/write; automatic marker preserved at ff533c34de6da6c096a34acbfebd9877735575ce.'
+$known = [IO.File]::ReadAllText($path)
+if (-not $known.Contains('Uncommitted value=6 exists; live verification not performed.')) { throw 'manual fact missing' }
+Write-Output 'Repeated explicit save: all known requested facts already present; one read, zero writes or timestamp refresh.'
+Stop-Transcript | Out-Null
+Process ID: 105776
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+New amend SHA: one selected-record read and one write; no index I/O or new plan.
+Scenario selection cleared: there is now no active handoff.
+
+
+No selected handoff: no scan, initialization, checkpoint read or write.
+Scenario explicit save request selects HandoffDocs/handoffs/probe.md again for known uncommitted facts.
+Manual sync: one read/write; automatic marker preserved at ff533c34de6da6c096a34acbfebd9877735575ce.
+Repeated explicit save: all known requested facts already present; one read, zero writes or timestamp refresh.
+**********************
+PowerShell transcript end
+End time: 20260923162148
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162202
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+git add task.txt
+git -c commit.gpgsign=false commit -m 'substantive input before locked checkpoint'
+if ($LASTEXITCODE -ne 0) { throw 'commit failed' }
+git log -1 --format=%H --name-only
+Stop-Transcript | Out-Null
+Process ID: 141236
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+
+
+
+**********************
+PowerShell transcript end
+End time: 20260923162202
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162232
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+$path = Join-Path (Get-Location) 'HandoffDocs/handoffs/probe.md'
+$note = [IO.File]::ReadAllText($path)
+$pending = $note.Replace('checkpoint_commit: ff533c34de6da6c096a34acbfebd9877735575ce', 'checkpoint_commit: 439b4a971517af4c2590bf94ce079bfd15590e84')
+$lock = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::None)
+$failed = $false
+try {
+    try { [IO.File]::WriteAllText($path, $pending) }
+    catch { $failed = $true; Write-Output "Expected checkpoint failure: $($_.Exception.Message)" }
+} finally { $lock.Dispose() }
+if (-not $failed) { throw 'write unexpectedly succeeded' }
+Write-Output 'Commit succeeded; checkpoint failed. One selected read and one failed write attempt. No retry, marker claim, or Git rollback.'
+Write-Output 'Explicit migration scenario: remove only selected legacy Next, preserve independent scope; no new automatic association.'
+$note = [IO.File]::ReadAllText($path)
+$note = $note.Replace("> **Next** Deploy to production (legacy advice; not authorized).`n", '')
+[IO.File]::WriteAllText($path, $note)
+Write-Output 'Migration completed with one selected read/write; no copied plan or new marker.'
+Write-Output 'FINAL AUDIT (separate from maintenance):'
+$current = [IO.File]::ReadAllText($path)
+if (-not $current.Contains('checkpoint_commit: ff533c34de6da6c096a34acbfebd9877735575ce')) { throw 'marker advanced on failure or manual action' }
+if ($current.Contains('**Next**')) { throw 'legacy field remained after migration' }
+$index = [IO.File]::ReadAllText((Join-Path (Get-Location) 'HandoffDocs/handoff.md'))
+$baselineIndex = (git show HEAD:HandoffDocs/handoff.md) -join "`n"
+if ($index.TrimEnd() -ne $baselineIndex.TrimEnd()) { throw 'index changed unexpectedly' }
+if ((git rev-parse HEAD) -ne '439b4a971517af4c2590bf94ce079bfd15590e84') { throw 'successful commit changed' }
+Write-Output 'Audit PASS: failed marker unchanged, commit intact, index untouched, legacy field removed only by migration, no new Log entry.'
+Get-Content -Raw HandoffDocs/handoffs/probe.md
+git status --short
+Stop-Transcript | Out-Null
+Process ID: 124952
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Expected checkpoint failure: Exception calling "WriteAllText" with "2" argument(s): "The process cannot access the file 'C:\Users\francyzheng\AppData\Local\Temp\handit-checkpoints-bdce86785ed84e6fa4b586f55ccef9c1\HandoffDocs\handoffs\probe.md' because it is being used by another process."
+Commit succeeded; checkpoint failed. One selected read and one failed write attempt. No retry, marker claim, or Git rollback.
+Explicit migration scenario: remove only selected legacy Next, preserve independent scope; no new automatic association.
+Migration completed with one selected read/write; no copied plan or new marker.
+FINAL AUDIT (separate from maintenance):
+Audit PASS: failed marker unchanged, commit intact, index untouched, legacy field removed only by migration, no new Log entry.
+---
+slug: probe
+status: in-progress
+owner: acceptance
+updated: 2026-09-23
+checkpoint_commit: ff533c34de6da6c096a34acbfebd9877735575ce
+---
+# Probe
+> **State** Uncommitted value=6 exists; live verification not performed.
+> **Blocked** none
+## Scope
+- Goal: Validate local checkpoint behavior only.
+- Out of scope: Production, network, user-installed skills.
+## Context
+- Must read: task.txt
+## Log
+
+**********************
+PowerShell transcript end
+End time: 20260923162233
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162324
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+Write-Output 'History-only observation scenario; no replay of a previously observed commit:'
+git show -s --format=%H a603489
+Write-Output 'No checkpoint I/O. This tests history-only observation, not an independent concurrent agent.'
+[IO.File]::WriteAllText((Join-Path (Get-Location) 'task.txt'), "value=7`n")
+if ((Get-Content -Raw task.txt).Trim() -ne 'value=7') { throw 'final local acceptance failed' }
+git add task.txt
+git -c commit.gpgsign=false commit -m 'final local acceptance task input'
+if ($LASTEXITCODE -ne 0) { throw 'commit failed' }
+git log -1 --format=%H --name-only
+Stop-Transcript | Out-Null
+Process ID: 127020
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+History-only observation scenario; no replay of a previously observed commit:
+
+No checkpoint I/O. This tests history-only observation, not an independent concurrent agent.
+
+
+
+**********************
+PowerShell transcript end
+End time: 20260923162325
+**********************
+**********************
+PowerShell transcript start
+Start time: 20260923162347
+Username: FRANCYZHEN-PCCO\francyzheng
+RunAs User: FRANCYZHEN-PCCO\francyzheng
+Configuration Name:
+Machine: FRANCYZHEN-PCCO (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Users\francyzheng\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\powershell\pwsh.dll -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+Start-Transcript -Path acceptance-transcript.txt -Append | Out-Null
+$path = Join-Path (Get-Location) 'HandoffDocs/handoffs/probe.md'
+$note = [IO.File]::ReadAllText($path)
+$note = $note.Replace('checkpoint_commit: ff533c34de6da6c096a34acbfebd9877735575ce', 'checkpoint_commit: 42573dd48f628a64e9de10df01d866d8cb98bcbf').Replace('status: in-progress', 'status: done').Replace('Uncommitted value=6 exists; live verification not performed.', 'Local value=7 acceptance passed; live verification not performed.')
+[IO.File]::WriteAllText($path, $note)
+$indexPath = Join-Path (Get-Location) 'HandoffDocs/handoff.md'
+$index = [IO.File]::ReadAllText($indexPath)
+$index = $index.Replace("| probe | acceptance | in-progress | 2026-09-23 |`n", '') + "`n## Done`n| Slug | Result |`n| --- | --- |`n| probe | Local acceptance passed; live verification not performed |`n"
+[IO.File]::WriteAllText($indexPath, $index)
+Write-Output 'Status-changed checkpoint: one handoff read/write plus one index read/write; one logical checkpoint. No future-action column or Log row.'
+Write-Output 'FINAL AUDIT 2 (separate from maintenance):'
+$note = [IO.File]::ReadAllText($path)
+$index = [IO.File]::ReadAllText($indexPath)
+if (-not $index.Contains('| untouched | other | in-progress | 2026-01-01 |')) { throw 'unrelated index row changed' }
+if ($note -match '\*\*Next\*\*|Deploy to production|^- \[(decision|failed|blocker|rejected)\]') { throw 'unexpected plan or Log' }
+if (-not $note.Contains('checkpoint_commit: 42573dd48f628a64e9de10df01d866d8cb98bcbf')) { throw 'final marker wrong' }
+Write-Output 'PASS: owned index row updated, unrelated row intact, final marker correct, facts only.'
+git status --short
+Stop-Transcript | Out-Null
+Process ID: 137628
+PSVersion: 7.6.5
+PSEdition: Core
+GitCommitId: 7.6.5
+OS: Microsoft Windows 10.0.26200
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Status-changed checkpoint: one handoff read/write plus one index read/write; one logical checkpoint. No future-action column or Log row.
+FINAL AUDIT 2 (separate from maintenance):
+PASS: owned index row updated, unrelated row intact, final marker correct, facts only.
+
+**********************
+PowerShell transcript end
+End time: 20260923162348
+**********************

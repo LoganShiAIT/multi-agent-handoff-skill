@@ -11,7 +11,6 @@ work_item: W-01
 # Add Profile Filters: W-01
 
 > **State** Execution slot initialized from the ready task; implementation not started.
-> **Next** Add the focused acceptance test for W-01.
 > **Blocked** none
 
 ## Scope

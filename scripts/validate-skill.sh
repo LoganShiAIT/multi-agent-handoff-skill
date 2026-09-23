@@ -3,6 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
+if [ "$#" -gt 0 ]; then repo_root="$(cd "$1" && pwd)"; fi
 skill_dir="$repo_root/handit"
 skill_file="$skill_dir/SKILL.md"
 agent_file="$skill_dir/agents/openai.yaml"
@@ -50,7 +51,7 @@ require_text_not_grep() {
   local text="$1"
   local pattern="$2"
   local label="$3"
-  if printf '%s\n' "$text" | grep -Eq -- "$pattern"; then
+  if printf '%s\n' "$text" | grep -Eqi -- "$pattern"; then
     errors+=("Found forbidden $label")
   fi
 }
@@ -60,6 +61,7 @@ extract_fenced_block() {
   local file="$1"
   local heading="$2"
   awk -v heading="$heading" '
+    { sub(/\r$/, "") }
     $0 == heading { found = 1; next }
     found && /^```/ {
       if (inblock) { exit }
@@ -84,7 +86,7 @@ if [ -f "$skill_file" ]; then
   require_grep '^name:[[:space:]]*handit[[:space:]]*$' "$skill_file" "SKILL.md name frontmatter"
   require_grep '^description:[[:space:]]*.+' "$skill_file" "SKILL.md description frontmatter"
   require_grep '^## Lazy Command Routing$' "$skill_file" "Lazy Command Routing"
-  require_grep 'routine minimal handoff maintenance separate from command routing' "$skill_file" "routine maintenance boundary"
+  require_grep 'Automatic Checkpoint Boundary' "$skill_file" "commit checkpoint boundary"
   require_not_grep 'After a handoff-related action.*suggest' "$skill_file" "global post-command suggestion rule"
 
   skill_size="$(wc -c < "$skill_file" | tr -d '[:space:]')"
@@ -341,6 +343,44 @@ external_task_record="$external_task_dir/task.md"
 if [ -f "$external_task_record" ]; then
   require_grep '^[[:space:]]*-[[:space:]]*Owner:[[:space:]]*external[[:space:]]*$' "$external_task_record" "external example owner"
 fi
+
+
+# Scope planning-field guards to current formats. Legacy and formal plans are legal.
+future_field='^(>[[:space:]]*\*\*|#{1,6}[[:space:]]+|-[[:space:]]+)(Next([ -]Action|[ -]Steps?)?|Needed|Follow-up|Plan|Action Items)\b|^\|.*\|[[:space:]]*(Next Action|Needed|Follow-up|Plan|Action Items)[[:space:]]*\|'
+unconditional='before (returning|every return)|after (every |each |meaningful |substantive )(action|work|implementation|investigation)|whenever.*(state changes|progress)'
+for heading in '## Full Execution Handoff Template' '## Light Handoff Template' '## Full Index Template'; do
+  block="$(extract_fenced_block "$references_dir/handoff-formats.md" "$heading")"
+  require_text_not_grep "$block" "$future_field" "$heading future-action field"
+  if [ "$heading" != '## Full Index Template' ]; then
+    require_text_grep "$block" '^> \*\*State\*\*' "$heading State"
+    require_text_grep "$block" '^> \*\*Blocked\*\*' "$heading Blocked"
+  fi
+done
+for relative in \
+  examples/basic-handoff/HandoffDocs/handoff.md \
+  examples/basic-handoff/HandoffDocs/handoffs/api-auth-investigation.md \
+  examples/light-handoff/HandoffDocs/light/api-auth-investigation.md \
+  examples/task-spec-external/HandoffDocs/handoff.md \
+  examples/task-spec-external/HandoffDocs/handoffs/add-profile-filters--w-01.md \
+  README.md; do
+  require_not_grep "$future_field" "$repo_root/$relative" "$relative future-action field"
+done
+for relative in handit/commands/handoffprompt.md examples/handoffprompt-output.md examples/light-handoffprompt-output.md; do
+  require_not_grep "$unconditional" "$repo_root/$relative" "$relative unconditional maintenance"
+  require_not_grep "$future_field" "$repo_root/$relative" "$relative future-action field"
+  for term in 'observed successful substantive current-task commit' 'explicit sync/save request' 'checkpoint_commit' 'handoff-only' 'no maintenance reads or writes'; do
+    require_grep "$term" "$repo_root/$relative" "$relative $term"
+  done
+done
+for term in 'observed successful commit' 'Without a selected handoff' 'zero automatic maintenance reads or writes' 'checkpoint_commit' 'Duplicate SHA' 'handoff-only commit' 'Manual sync preserves' 'No hooks' 'do not write'; do
+  require_grep "$term" "$skill_file" "checkpoint rule: $term"
+done
+require_not_grep "$unconditional" "$skill_file" 'entrypoint unconditional maintenance'
+require_not_grep "$unconditional" "$references_dir/handoff-formats.md" 'formats unconditional maintenance'
+require_grep 'No new facts or requested correction means no write' "$commands_dir/tracehandoff.md" 'manual sync no-op'
+require_grep 'preserve `checkpoint_commit` unchanged' "$commands_dir/tracehandoff.md" 'manual sync marker preservation'
+require_grep 'Do not inspect records between execution steps' "$references_dir/artifact-lifecycle.md" 'bounded eviction'
+require_path "$repo_root/examples/legacy-next/input.md" 'legacy compatibility fixture'
 
 if [ "${#errors[@]}" -gt 0 ]; then
   printf 'Skill validation failed:\n' >&2

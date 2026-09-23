@@ -3,21 +3,11 @@ name: handit
 description: Use for external-first task-spec planning and resumable project handoff coordination across Claude Code, Codex, or other agent sessions. Trigger when the user asks to initialize or update a task specification, bind OpenSpec/OPSX/project-owned specs to execution work, preserve project continuity, explicitly sync handoff progress, compact or archive handoff context, or create a study note. Generate a transfer prompt only when the user explicitly invokes `/handoffprompt` or clearly asks to generate or prepare a prompt for another agent/session; never infer prompt generation from a mere mention of future work, another agent, or resumability.
 ---
 
-# Handit
+# handit skill
 
-## Purpose
+## Purpose And Activation
 
-Coordinate task planning separately from execution continuity. Treat formal task specs as orchestration truth and handoff files as compact execution state.
-
-Default to `HandoffDocs/` as the project-local root unless the project or user names a different root.
-
-## Activation Boundary
-
-Use this skill for concrete project work that benefits from specifications, continuity, multi-agent coordination, artifacts, blockers, compaction, archival, or resumable execution.
-
-Do not initialize task or handoff state for casual chat, one-off Q&A, pure concept explanation, early brainstorming before a task is chosen, or reading-only discussion without durable decisions or follow-up work.
-
-When task shape is unclear, use `/explorehandoff` first. Keep exploration read-only.
+Separate formal planning from compact execution continuity. Default root: `HandoffDocs/`, unless the user/project specifies another. Do not initialize state for casual chat, one-off answers, or reading-only discussion. For unclear task shape use read-only exploration.
 
 ## Task Specs Vs Handoffs
 
@@ -31,30 +21,31 @@ Use `/inithandoff --from-task <task-slug> --work-item <work-item-id>` to create 
 
 Use a light handoff for one focused task that needs a small continuation note at `HandoffDocs/light/<task-slug>.md`.
 
-Use a full handoff for execution that needs task binding, an index, per-slot handoffs, artifacts, blockers, archive status, stale-artifact trust rules, compaction, study notes, or cleanup tracking.
+Use full handoffs for task binding, index, artifacts, archive, compaction, study, or cleanup tracking.
 
 Ask before creating a full handoff unless the user explicitly requested full coordination or a task-bound execution slot.
 
 ## Lazy Command Routing
 
-Do not read command files until a specific action has been selected. Do not read reference files until the selected command says they are required.
+Do not read command files until a specific action has been selected. Read references only as required by a selected command or eligible checkpoint.
 
 Treat a natural-language request as equivalent to a command only when it clearly asks for that action.
 
-Strong natural-language triggers include:
+A mere mention of another agent or resumability does not request a transfer prompt. Generate one only for explicit prompt-generation intent.
 
-- Task planning: "initialize this task", "write the task spec", "bind this OpenSpec change", "update the task plan", "mark this task ready".
-- Continuity setup: "make a continuation note", "set up handoff context", "initialize handoff", "keep project context".
-- Explicit progress sync: "update the handoff", "record what changed in the handoff", "append current status".
-- Explicit prompt generation: "generate a prompt for the next agent", "prepare the handoff prompt", "package transfer instructions for Claude/Codex".
-- Context hygiene: "compact the handoff", "archive this task", "close this handoff", "avoid stale context".
-- Learning capture: "make a study note", "write a learning note", "turn this task into a reflection".
+## Automatic Checkpoint Boundary
 
-Mere mention of another agent, a future session, handoff, or resumability may activate continuity handling but must not generate a prompt. Generate a prompt only for explicit prompt-generation intent.
+Automatic maintenance runs only after an observed successful commit with substantive current-task changes and an already selected, unambiguous handoff. Without a selected handoff, skip without initialization or scanning. Failed/cancelled commits, proposals, push, checkout, pull, and external-session history do not trigger maintenance.
 
-Keep routine minimal handoff maintenance separate from command routing. After meaningful implementation, investigation, failure, validation, blocker, or next-step changes, update the active handoff concisely without presenting that maintenance as `/tracehandoff`. Use `/tracehandoff` only for an explicit user request to synchronize or backfill progress.
+Between commits, implementation, investigation, failures, tests, blockers, changed plans, pauses, time/token usage, and ending a response cause zero automatic maintenance reads or writes. Initial context recovery is separate. Do not evaluate record importance or eviction between execution steps.
 
-Routine maintenance is where most records are written, so it is also where they must be evicted. Refresh the status block, and append to `Log` only facts that cannot be derived from code, specs, or git, each written as `- [<kind>] <date> <fact>` with kind `failed`, `rejected`, `blocker`, or `decision`. Then drop records the new ones superseded, landed, or resolved; the kind decides which of those can reach a record. Never drop failed attempts, rejected alternatives, or unresolved blockers.
+Use the observed result; only if needed read that commit's full SHA and changed paths, never a complete diff to reconstruct a journal. Task code, formal docs, and task/spec deliverables qualify. A handoff-only commit changing execution notes, index, or maintenance artifacts does not; a mixed substantive task commit does.
+
+For an eligible commit, minimally update the selected handoff once. Optional frontmatter `checkpoint_commit` stores the full SHA only with a successful write. Duplicate SHA: no write or timestamp refresh. An authorized substantive amend with a new SHA qualifies once. Manual sync preserves this marker; it never invents a commit association. On write failure, report the failed checkpoint separately, leave the commit intact, and do not advance the marker or automatically retry.
+
+Write known facts, observed verification boundaries, unresolved blockers, and existing explicit constraints only. Keep `State` and `Blocked`; never infer or maintain a next-step plan. Do not append a Log entry merely because a commit occurred. Use record kinds `failed`, `rejected`, `blocker`, `decision` only for facts not derivable from code, specs, or git. Apply existing Record Lifecycle rules only during an authorized write, using known evidence; never investigate, re-test, or scan history to enrich or evict records. Edit a full index's owned row only when its factual status changes.
+
+Never request, create, split, stage, amend, or push a commit for maintenance. No hooks, watchers, polling, or automatic backfill of external commits. Shared handoff changes may remain uncommitted. Explicit sync/save requests (including `/tracehandoff`) may save uncommitted facts; with no new facts or correction, do not write. Explicit initialization, compaction, archive, and study retain their authorized scope; completion adds no checkpoint. Old Next or equivalent fields are inert historical advice: do not execute, refresh, copy into prompts, or rename them. Remove them only in explicitly requested migration/compaction, preserving independently authorized constraints.
 
 Route selected actions as follows:
 
@@ -74,7 +65,7 @@ Treat commands as independent actions, not a wizard. Finish after reporting the 
 
 Never silently move, copy, delete, archive, relocate, stage, commit, push, or modify git metadata. These actions require explicit user confirmation.
 
-Without explicit confirmation, agents may create or update expected task records, internal task documents, light or full handoff documents, expected directories, compact-history reports, index rows, and archive proposals. Creating a task record does not grant permission to edit an external spec workflow.
+Explicit actions may write their expected task records, internal docs, handoffs, directories, history reports, index rows, and archive proposals. Checkpoints write only selected execution state; they never edit task specs. Task records grant no external-spec write permission.
 
 Require explicit user confirmation before moving or copying handoffs into archive, deleting active handoffs, cleaning artifacts, modifying git ignore metadata, staging, committing, or pushing.
 

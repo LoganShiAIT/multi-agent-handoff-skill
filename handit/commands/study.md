@@ -71,3 +71,5 @@ Possible section patterns. Pick what fits; do not include all by default:
 ```
 
 Report the created HTML path and the one most important lesson. If handoff-linked, add the note to the selected handoff as part of the same action. End after reporting.
+
+This explicit action authorizes only its stated writes; completion does not trigger another checkpoint. Preserve any `checkpoint_commit`. Handoff state/index edits contain facts only, without Next or renamed planning fields. Old planning fields remain inert unless migration was explicitly requested. Study reflections and confirmed archive operations do not become execution work items.

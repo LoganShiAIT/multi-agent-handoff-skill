@@ -211,10 +211,12 @@ After creation:
 - Let the coordinator or an explicit task-update action edit task records and internal task docs.
 - Let execution agents edit only their own handoff and owned index row.
 - Do not let routine handoff maintenance edit task specs.
-- If execution discovers a spec change, record the need in the handoff and let the owning workflow apply it.
+- If execution discovers a spec mismatch, record the known gap only at an authorized checkpoint or explicit sync; the owning workflow controls spec edits.
 - Treat planned intent, current implementation, and execution state as different facts:
   - Formal task specs define intended behavior.
   - Current source and configuration define implemented behavior.
   - Active handoffs define execution progress.
 - Do not move or archive task specs with execution-handoff archival.
 - Mark task completion through an explicit task update. Leave task directories in place in this version.
+
+Explicit `/inittask`, `/updatetask`, and `/explorehandoff` retain planning duties. Formal plans and user instructions authorize execution; automatic handoff maintenance must not copy them into a next-step plan, edit them, or infer new work. Preserve references and acceptance boundaries instead.

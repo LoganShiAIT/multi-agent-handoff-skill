@@ -14,7 +14,7 @@ Read these before compacting:
 - `references/artifact-lifecycle.md`
 - `references/handoff-formats.md` when migrating a legacy handoff to the current structure
 
-This command is the fallback, not the primary length control. `Record Lifecycle` in `references/artifact-lifecycle.md` evicts dead records incrementally on every write, and a handoff maintained that way should not need compaction. Reach for this command in two cases only:
+This command is the fallback, not the primary length control. `Record Lifecycle` in `references/artifact-lifecycle.md` evicts dead records using known evidence only during authorized writes, and a handoff maintained that way should not need compaction. Reach for this command in two cases only:
 
 - A handoff grew past budget despite incremental eviction.
 - A handoff still uses the legacy structure and needs migrating.
@@ -49,14 +49,14 @@ Workflow:
    - Create `HandoffDocs/artifacts/<execution-slug>/reports/YYYYMMDD-HHMMSS-compact-history.md` before editing the active handoff.
    - The report must preserve the key historical details being removed or condensed: every dropped record, relevant artifact paths, stale context notes, the previous status, and any legacy stored transfer-prompt field. When migrating a legacy handoff, this includes its `Progress Log`, `Findings and Decisions`, `Context Packet`, and `Handoff Back` contents.
    - Stop if the report cannot be created. Do not rewrite the active handoff.
-   - Preserve complete frontmatter, the status block, `Scope`, `Context`, `Task Binding` when present, `Artifacts`, `Study Notes`, and `Extra Files`.
+   - Preserve complete frontmatter (including any `checkpoint_commit`), factual State/Blocked, `Scope`, `Context`, `Task Binding` when present, `Artifacts`, `Study Notes`, and `Extra Files`.
    - Preserve every live record, keeping its kind unchanged. Drop only records already dead under `Record Lifecycle`, and prefer appending those to `history.md` over writing a report.
    - Omit legacy stored transfer-prompt fields from active context after their contents are preserved in the report.
    - Add or update `History` with one row linking to the report.
    - Never remove unresolved blockers, risks, user-confirmation items, cleanup candidates, or `Extra Files` rows.
 5. For a legacy-structure migration:
    - Move machine fields from `Metadata` into frontmatter.
-   - Rewrite `Handoff Back` as the status block at the top.
+   - Rewrite `Handoff Back` as factual State and Blocked at the top. Remove legacy Next and equivalent future-action fields from the selected current record. Never execute, copy, or rename old plans into facts; preserve constraints from their independent user-authorized source.
    - Merge `Mission` into `Scope`, and `Context Panel` plus `Context Packet` into `Context`, dropping which files a previous agent read and which commands it ran.
    - Merge `Progress Log` and `Findings and Decisions` into `Log`, keeping only records still live under `Record Lifecycle`. Label each with the kind it turns out to be. If a legacy entry is a bare event with no failure, rejection, blocker, or decision behind it, drop it instead of inventing a kind for it.
    - Drop every empty section rather than carrying it forward.
@@ -65,7 +65,9 @@ Workflow:
    - The report must preserve any older `Done` or `Archived` rows removed from the active index, plus a short explanation of what was compacted.
    - Stop if the report cannot be created. Do not rewrite the index.
    - Re-read `HandoffDocs/handoff.md` immediately before editing.
-   - Preserve all `Active` and `Blocked` rows. Shorten long `Next Action`, `Blocker`, or `Needed` text into one-line operational signal.
+   - Preserve all `Active` and `Blocked` identities and factual state. Remove Next Action, Needed, Follow-up, and equivalent planning columns; do not migrate their advice into other columns. Use Active: Slug/Owner/Status/Updated, Blocked: Slug/Owner/Blocker, Done: Slug/Result. Preserve independently authorized constraints and actual archive replacement references.
    - Keep only the most recent 20 rows in `Done` and `Archived`; move older rows into the report. If dates do not make recency clear, preserve existing order and treat lower rows as newer.
 7. Do not read `HandoffDocs/archive/`, `HandoffDocs/study/`, or historical artifacts unless the active handoff or index explicitly links to a specific compact history report that is needed for the compaction.
 8. Report the compacted target, report path, remaining line count if checked, preserved Task Binding, and unresolved blockers. End after reporting.
+
+This explicit action generates no new plan or commit association and adds no automatic checkpoint on completion. Unselected records and unrelated history stay unchanged.

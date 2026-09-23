@@ -4,12 +4,12 @@ status: in-progress
 owner: Codex session A
 updated: 2026-07-02
 branch: main
+checkpoint_commit: 0123456789abcdef0123456789abcdef01234567
 ---
 
 # API Auth Investigation
 
 > **State** Intermittent 401s narrowed to retry header reuse after token refresh.
-> **Next** Add a focused test asserting the retry request carries the refreshed token.
 > **Blocked** none
 
 ## Scope

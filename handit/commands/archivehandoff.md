@@ -66,3 +66,5 @@ Workflow:
 Never treat `delete-candidate` as permission to delete. Never delete archived execution handoffs, active execution handoffs, artifacts, or scattered workspace files unless the user explicitly confirms that deletion.
 
 Report the archive result, retained task binding, artifact state, and any actions still awaiting confirmation. End after reporting.
+
+This explicit action authorizes only its stated writes; completion does not trigger another checkpoint. Preserve any `checkpoint_commit`. Handoff state/index edits contain facts only, without Next or renamed planning fields. Old planning fields remain inert unless migration was explicitly requested. Study reflections and confirmed archive operations do not become execution work items.

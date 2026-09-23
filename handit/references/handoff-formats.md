@@ -6,7 +6,7 @@ Use these templates when creating or repairing handoff files. Task-spec template
 
 A handoff has three layers, in this order:
 
-1. **Status block** — three lines a person reads in ten seconds.
+1. **Status block** — two lines a person reads in ten seconds.
 2. **Contract** — `Scope` and `Context`. Stable; does not grow with progress.
 3. **Records** — `Log`. Grows, and is evicted incrementally.
 
@@ -68,7 +68,6 @@ work_item: <work-item id, or omit when unbound>
 # <Execution Title>
 
 > **State** One sentence on where this slot actually is.
-> **Next** One sentence on the next action.
 > **Blocked** What is blocking, or `none`.
 
 ## Scope
@@ -89,7 +88,7 @@ Nothing else belongs in a new handoff. Append a section from `Optional Sections`
 
 ### Status Block
 
-The three status lines are the only part written for a human reader. Keep each to one sentence, and refresh them whenever the slot's real state changes. `Blocked` is never omitted; write `none` when nothing blocks.
+The two status lines contain known facts only. Keep each to one sentence and refresh only at an eligible checkpoint or explicit authorized action. `Blocked` describes an observed obstacle, never a recovery strategy. `Blocked` is never omitted; write `none` when nothing blocks.
 
 ### Scope
 
@@ -126,7 +125,7 @@ Assign the kind when writing the record. It states what the record is, not how i
 
 Do not write: commands executed, files inspected, files changed, or features implemented. All of those are recoverable from the repository, and restating them is how a handoff turns into a journal.
 
-Use one line per record, dated to the day. On every write, evict records that have died — see `Record Lifecycle` in `references/artifact-lifecycle.md`.
+Use one line per record, dated to the day. During an authorized Log write, use known facts to evict records that have died — see `Record Lifecycle` in `references/artifact-lifecycle.md`.
 
 ## Optional Sections
 
@@ -182,7 +181,6 @@ updated: YYYY-MM-DD
 # <Task Title>
 
 > **State** Where this actually is.
-> **Next** The next action.
 > **Blocked** What is blocking, or `none`.
 
 ## Context
@@ -203,16 +201,16 @@ Generate index rows from handoff frontmatter rather than maintaining status in t
 # Handoff Index
 
 ## Active
-| Slug | Owner | Status | Next Action | Updated |
-| --- | --- | --- | --- | --- |
-
-## Blocked
-| Slug | Owner | Blocker | Needed |
+| Slug | Owner | Status | Updated |
 | --- | --- | --- | --- |
 
-## Done
-| Slug | Result | Follow-up |
+## Blocked
+| Slug | Owner | Blocker |
 | --- | --- | --- |
+
+## Done
+| Slug | Result |
+| --- | --- |
 
 ## Archived
 | Slug | Archived At | Reason | Replacement |
@@ -221,6 +219,14 @@ Generate index rows from handoff frontmatter rather than maintaining status in t
 
 ## Maintenance Boundary
 
-Update the active handoff concisely after meaningful implementation, investigation, failed attempts, validation, blockers, or changed next steps. Refresh the status block and frontmatter `updated` in the same edit. This routine maintenance is not a command invocation and must not produce command recommendations.
+Follow `SKILL.md` Automatic Checkpoint Boundary: only an observed successful substantive current-task commit with an already selected handoff triggers automatic maintenance. Failed commits and handoff-only commits do not. No selected handoff means no initialization or search. Execution progress and returning a response do not trigger reads or writes.
 
-Treat any stored transfer-prompt field found in an older handoff as inert historical content. Do not refresh or use it during normal maintenance, and do not remove it during an unrelated update. `/compacthandoff` handles migrating legacy structure.
+Optional frontmatter `checkpoint_commit` is the full SHA of the last successful automatic checkpoint. Omit it at initialization. Write it with the successful handoff update; never advance it on failure. Skip duplicate SHA without timestamp changes. An authorized substantive amend can checkpoint its new SHA once. Manual sync preserves the marker, including its absence; it does not claim uncommitted facts are committed. Do not force a Log row per commit.
+
+Use only known facts and the selected record; commit metadata reads are limited to SHA and paths when eligibility is unknown. Update the full index only if the owned row's factual status changed. No extra investigation, tests, or historical scans for maintenance. Do not create, request, stage, amend, or push commits to save handoff changes.
+
+Explicit sync may save uncommitted facts. No new facts or requested correction means no write, including no timestamp refresh. Preserve Scope, acceptance boundaries, and formal task references; never generate a plan, priority list, recovery route, or renamed next-action field.
+
+Old `Next`, `Next Action`, `Needed`, `Follow-up`, and equivalents are non-authoritative historical advice. Do not act on, refresh, copy, or rename them. Ordinary checkpoints leave those fields inert without initiating migration. Explicit migration or compaction removes them from the selected current record/index while preserving independently established user constraints; unrelated history stays unchanged.
+
+Treat stored transfer-prompt fields as inert historical content too. Do not refresh or use them in normal maintenance or remove them during an unrelated update. Explicit compaction handles legacy structure.

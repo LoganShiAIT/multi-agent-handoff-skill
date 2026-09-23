@@ -14,11 +14,11 @@ Read:
 
 Use the Task Binding and `Context` section as the reading boundary. Execute only W-01. Do not edit task specs or other handoff slots unless the user explicitly expands scope.
 
-Before returning:
-- Refresh the status block and frontmatter `updated` in `HandoffDocs/handoffs/add-profile-filters--w-01.md`.
-- Append to `Log` only what cannot be derived from code, specs, or git: failed attempts, rejected alternatives, open blockers, decisions later work must not reverse. Evict records the new ones superseded, landed, or resolved.
-- Update only its owned row in `HandoffDocs/handoff.md` when operational status changed.
-- Put temporary execution artifacts under `HandoffDocs/artifacts/add-profile-filters--w-01/`.
+Maintenance: follow Handit `SKILL.md` Automatic Checkpoint Boundary. Only an observed successful substantive current-task commit with this selected handoff, or an explicit sync/save request, permits a state update. Skip failed commits, handoff-only commits, and duplicate `checkpoint_commit` SHA; an authorized substantive amend can checkpoint its new SHA. Record the full SHA only with a successful automatic write. Manual sync preserves it, and no-change sync writes nothing. Returning findings or blockers alone causes no maintenance reads or writes. Never create, request, stage, amend, or push commits for maintenance; no polling or external-commit backfill. Report write failure without advancing the marker or retrying.
+
+Save only known facts in State/Blocked and non-derivable Log facts. No extra tests/investigation to enrich records, no mandatory commit journal, no next-step plans or copied legacy Next. Preserve user scope and formal task references.
+
+Update only the owned index row if its factual status changes. Put temporary artifacts under `HandoffDocs/artifacts/add-profile-filters--w-01/`.
 
 Return:
 - What changed or was found

@@ -7,6 +7,7 @@ updated: 2026-07-02
 # API Auth Investigation
 
 > **State** Likely cause is stale retry headers after token refresh.
+> **Next** Add a focused regression test for retry headers after refresh.
 > **Blocked** none
 
 ## Context
